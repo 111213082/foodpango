@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收入管理</title>
+</head>
+<body>
+    <h1>收入管理</h1>
+
+    <h2>我的總收入: $<span id="total_income">0</span></h2>
+
+    <h3>配送記錄:</h3>
+    <div id="income_records">
+        <!-- 這裡顯示每筆配送的收入 -->
+    </div>
+
+    <h3>可提款金額: $<span id="withdrawable_amount">0</span></h3>
+
+    <h3>請求提款:</h3>
+    <form id="withdraw-form">
+        <input type="number" id="withdraw-amount" placeholder="請輸入提款金額" required>
+        <button type="submit">提交提款請求</button>
+    </form>
+
+    <script>
+        const deliveryPersonId = 123;  // 假設外送員 ID 為 123
+
+        // 顯示收入和可提款金額
+        fetch(`/delivery/${deliveryPersonId}/income`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total_income').innerText = data.total_income;
+
+                const incomeRecords = document.getElementById('income_records');
+                data.earnings.forEach(record => {
+                    incomeRecords.innerHTML += `
+                        <p>訂單 ID: ${record.order_id}, 基礎收入: $${record.base_income}, 總收入: $${record.total_income}</p>
+                    `;
+                });
+            });
+
+        fetch(`/delivery/${deliveryPersonId}/withdrawable`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('withdrawable_amount').innerText = data.withdrawable_amount;
+            });
+
+        // 提交提款請求
+        document.getElementById('withdraw-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const withdrawAmount = document.getElementById('withdraw-amount').value;
+
+            fetch(`/delivery/${deliveryPersonId}/withdraw`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: parseFloat(withdrawAmount) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message || data.error);
+            });
+        });
+    </script>
+</body>
+</html>
