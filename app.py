@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, session
 import mysql.connector
-from config import db_config
+from config import db_config, home
 
 app = Flask(__name__)
 
@@ -180,3 +180,10 @@ def request_withdrawal(delivery_person_id):
         return jsonify({'message': '提現請求已提交，處理中！'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+#商家主畫面
+@app.route("/SellerHome")
+def seller():
+    uID = session.get('loginID')  # 取得目前登入使用者的 uID
+    dat = home(uID)
+    return render_template('SellerHome.html', data=dat)
