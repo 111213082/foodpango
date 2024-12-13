@@ -1,91 +1,160 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品與服務評價</title>
+    <meta charset="utf-8">
+    <title>購物車</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
+        h1 { text-align: center; }
+        body { margin: 50px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        td, th {
+            border: 2px solid #000;
+            padding: 10px;
             text-align: center;
         }
-        .rating {
-            display: inline-block;
-            direction: rtl;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-        .rating input {
-            display: none;
-        }
-        .rating label {
-            color: grey;
-            cursor: pointer;
-        }
-        .rating input:checked ~ label,
-        .rating label:hover,
-        .rating label:hover ~ label {
-            color: gold;
-        }
-        .rating input:checked + label {
-            color: gold;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            font-size: 1em;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #4CAF50;
+        .delete-btn {
             color: white;
+            background-color: red;
             border: none;
+            padding: 5px 10px;
             cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .section {
-            margin-bottom: 30px;
         }
     </style>
 </head>
 <body>
-    <h1>商品與服務評價</h1>
-    <p>請選擇您對店家和送貨小哥的評價星級，並留下您的評論。</p>
+    <h1>購物車</h1>
+    <hr style="border: 5px solid black; width: 50%;">
+    <hr style="border: 1px solid black; width: 50%;">
 
-    <!-- 評價表單 -->
-    <form action="Thanks.html" method="GET" id="ratingForm">
-        <div class="section">
-            <h2>店家評價</h2>
-            <div class="rating">
-                <input type="radio" name="store_star" id="store_star5" value="5"><label for="store_star5">★</label>
-                <input type="radio" name="store_star" id="store_star4" value="4"><label for="store_star4">★</label>
-                <input type="radio" name="store_star" id="store_star3" value="3"><label for="store_star3">★</label>
-                <input type="radio" name="store_star" id="store_star2" value="2"><label for="store_star2">★</label>
-                <input type="radio" name="store_star" id="store_star1" value="1"><label for="store_star1">★</label>
-            </div>
-            <textarea name="store_comment" placeholder="請輸入您對店家的評論..."></textarea><br>
-        </div>
+    <form id="cartForm" onsubmit="return confirmOrder()">
+        <table id="cartTable">
+            <tr>
+                <th>選擇</th>
+                <th>編號</th>
+                <th>店家</th>
+                <th>商品名稱</th>
+                <th>價格</th>
+                <th>剩餘數量</th>
+                <th>示意圖</th>
+                <th>操作</th>
+                <th>需求數量</th>
+            </tr>
+        </table>
+        <br><br><br>
 
-        <div class="section">
-            <h2>送貨小哥評價</h2>
-            <div class="rating">
-                <input type="radio" name="delivery_star" id="delivery_star5" value="5"><label for="delivery_star5">★</label>
-                <input type="radio" name="delivery_star" id="delivery_star4" value="4"><label for="delivery_star4">★</label>
-                <input type="radio" name="delivery_star" id="delivery_star3" value="3"><label for="delivery_star3">★</label>
-                <input type="radio" name="delivery_star" id="delivery_star2" value="2"><label for="delivery_star2">★</label>
-                <input type="radio" name="delivery_star" id="delivery_star1" value="1"><label for="delivery_star1">★</label>
-            </div>
-            <textarea name="delivery_comment" placeholder="請輸入您對送貨小哥的評論..."></textarea><br>
-        </div>
-
-        <!-- 提交按鈕 -->
-        <button type="submit">提交評價</button>
+        <center>
+            <p>付款金額：<span id="totalPrice">0</span> 元</p>
+            <input type="submit" value="確認下單"><br><br><br>
+            <a href="FoodList.html">回到菜品清單</a>
+        </center>
     </form>
+
+    <script>
+        // 初始化購物車數據
+        const cartTable = document.getElementById("cartTable");
+        const totalPriceElement = document.getElementById("totalPrice");
+    
+        let totalPrice = 0;
+    
+        // 從 localStorage 獲取購物車數據
+        let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    
+        // 渲染購物車內容
+        function renderCart() {
+            // 清空現有的表格內容（保留標題行）
+            cartTable.innerHTML = `
+                <tr>
+                    <th>選擇</th>
+                    <th>編號</th>
+                    <th>店家</th>
+                    <th>商品名稱</th>
+                    <th>價格</th>
+                    <th>剩餘數量</th>
+                    <th>示意圖</th>
+                    <th>操作</th>
+                    <th>需求數量</th>
+                </tr>
+            `;
+    
+            // 遍歷 cartItems 並生成表格行
+            cartItems.forEach((item, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><input type="checkbox" class="itemCheckbox" data-index="${index}"></td>
+                    <td>${item.id}</td>
+                    <td>${item.shop}</td>
+                    <td>${item.name}</td>
+                    <td>${item.price}</td>
+                    <td>${item.quantity}</td>
+                    <td><img src="${item.image || 'placeholder.jpg'}" alt="示意圖" width="50"></td>
+                    <td><button class="delete-btn" data-index="${index}">刪除</button></td>
+                    <td><input type="number" class="quantityInput" min="1" max="${item.quantity}" value="1" data-index="${index}" style="width: 50px;"></td>
+                `;
+                cartTable.appendChild(row);
+            });
+    
+            // 更新總金額
+            updateTotalPrice();
+        }
+    
+        // 更新總金額
+        function updateTotalPrice() {
+            totalPrice = 0; // 重置總金額
+            const checkboxes = document.querySelectorAll('.itemCheckbox');
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const index = checkbox.dataset.index;
+                    const quantityInput = document.querySelector(`.quantityInput[data-index="${index}"]`);
+                    const itemPrice = parseFloat(cartItems[index].price);
+                    const quantity = parseInt(quantityInput.value);
+                    totalPrice += itemPrice * quantity;
+                }
+            });
+            totalPriceElement.textContent = totalPrice;
+        }
+    
+        // 監聽所有勾選框的變化事件
+        document.addEventListener("change", e => {
+            if (e.target.classList.contains("itemCheckbox") || e.target.classList.contains("quantityInput")) {
+                updateTotalPrice();
+            }
+        });
+    
+        // 添加刪除功能
+        document.addEventListener("click", e => {
+            if (e.target.classList.contains("delete-btn")) {
+                const index = e.target.getAttribute("data-index");
+                cartItems.splice(index, 1); // 從 cartItems 中刪除對應的商品
+                localStorage.setItem("cartItems", JSON.stringify(cartItems)); // 更新 localStorage
+                renderCart(); // 重新渲染購物車
+            }
+        });
+    
+        // 確認下單
+        function confirmOrder() {
+            if (totalPrice === 0) {
+                alert("請選擇商品後再下單！");
+                return false;
+            }
+    
+            const confirmation = window.confirm("是否確定下單？");
+            if (confirmation) {
+                alert("訂單已提交！");
+                localStorage.removeItem("cartItems"); // 清空購物車
+                window.location.href = "Trace.html"; // 跳轉到 Trace.html
+                return false;
+            } else {
+                alert("訂單取消！");
+                return false;
+            }
+        }
+    
+        // 首次渲染購物車內容
+        renderCart();
+    </script>
 </body>
 </html>

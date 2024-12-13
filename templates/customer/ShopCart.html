@@ -57,67 +57,89 @@
         // 初始化購物車數據
         const cartTable = document.getElementById("cartTable");
         const totalPriceElement = document.getElementById("totalPrice");
-
+    
         let totalPrice = 0;
-
+    
         // 從 localStorage 獲取購物車數據
         let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-
+    
         // 渲染購物車內容
         function renderCart() {
-            // 清空現有的表格內容（保留標題行）
-            cartTable.innerHTML = `
-                <tr>
-                    <th>選擇</th>
-                    <th>編號</th>
-                    <th>店家</th>
-                    <th>商品名稱</th>
-                    <th>價格</th>
-                    <th>剩餘數量</th>
-                    <th>示意圖</th>
-                    <th>操作</th>
-                </tr>
-            `;
+    // 清空現有的表格內容（保留標題行）
+    cartTable.innerHTML = `
+        <tr>
+            <th>選擇</th>
+            <th>編號</th>
+            <th>店家</th>
+            <th>商品名稱</th>
+            <th>價格</th>
+            <th>剩餘數量</th>
+            <th>示意圖</th>
+            <th>操作</th>
+            <th>需求數量</th>
+        </tr>
+    `;
 
-            // 遍歷 cartItems 並生成表格行
-            cartItems.forEach((item, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><input type="checkbox" class="itemCheckbox" data-price="${item.price}"></td>
-                    <td>${item.id}</td>
-                    <td>${item.shop}</td>
-                    <td>${item.name}</td>
-                    <td>${item.price}</td>
-                    <td>${item.quantity}</td>
-                    <td><img src="${item.image || 'placeholder.jpg'}" alt="示意圖" width="50"></td>
-                    <td><button class="delete-btn" data-index="${index}">刪除</button></td>
-                `;
-                cartTable.appendChild(row);
-            });
+    // 遍歷 cartItems 並生成表格行
+    cartItems.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td><input type="checkbox" class="itemCheckbox" data-index="${index}"></td>
+            <td>${item.id}</td>
+            <td>${item.shop}</td>
+            <td>${item.name}</td>
+            <td>${item.price}</td>
+            <td>${item.quantity}</td>
+            <td><img src="${item.image || 'placeholder.jpg'}" alt="示意圖" width="50"></td>
+            <td><button class="delete-btn" data-index="${index}">刪除</button></td>
+            <td><input type="number" class="quantityInput" min="1" max="${item.quantity}" value="1" data-index="${index}" style="width: 50px;"></td>
+        `;
+        cartTable.appendChild(row);
+    });
 
-            // 更新總金額
-            updateTotalPrice();
-        }
+    // 動態檢查需求數量是否超過剩餘數量
+    const quantityInputs = document.querySelectorAll('.quantityInput');
+    quantityInputs.forEach(input => {
+        input.addEventListener('input', e => {
+            const max = parseInt(input.getAttribute('max'));
+            const value = parseInt(input.value);
+            if (value > max) {
+                alert(`需求數量不能超過剩餘數量 (${max})！`);
+                input.value = max; // 限制為最大值
+            } else if (value < 1 || isNaN(value)) {
+                input.value = 1; // 最小值為 1
+            }
+            updateTotalPrice(); // 更新總金額
+        });
+    });
 
+    // 更新總金額
+    updateTotalPrice();
+}
+    
         // 更新總金額
         function updateTotalPrice() {
             totalPrice = 0; // 重置總金額
             const checkboxes = document.querySelectorAll('.itemCheckbox');
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
-                    totalPrice += parseFloat(checkbox.dataset.price);
+                    const index = checkbox.dataset.index;
+                    const quantityInput = document.querySelector(`.quantityInput[data-index="${index}"]`);
+                    const itemPrice = parseFloat(cartItems[index].price);
+                    const quantity = parseInt(quantityInput.value);
+                    totalPrice += itemPrice * quantity;
                 }
             });
             totalPriceElement.textContent = totalPrice;
         }
-
+    
         // 監聽所有勾選框的變化事件
         document.addEventListener("change", e => {
-            if (e.target.classList.contains("itemCheckbox")) {
+            if (e.target.classList.contains("itemCheckbox") || e.target.classList.contains("quantityInput")) {
                 updateTotalPrice();
             }
         });
-
+    
         // 添加刪除功能
         document.addEventListener("click", e => {
             if (e.target.classList.contains("delete-btn")) {
@@ -127,14 +149,14 @@
                 renderCart(); // 重新渲染購物車
             }
         });
-
+    
         // 確認下單
         function confirmOrder() {
             if (totalPrice === 0) {
                 alert("請選擇商品後再下單！");
                 return false;
             }
-
+    
             const confirmation = window.confirm("是否確定下單？");
             if (confirmation) {
                 alert("訂單已提交！");
@@ -146,7 +168,7 @@
                 return false;
             }
         }
-
+    
         // 首次渲染購物車內容
         renderCart();
     </script>

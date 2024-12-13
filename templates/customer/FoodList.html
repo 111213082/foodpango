@@ -102,7 +102,7 @@
 
             // 從第二行開始遍歷表格的每一行
             for (let i = 1; i < rows.length; i++) {
-                const nameCell = rows[i].getElementsByTagName('td')[2]; // 第三列是菜品名稱
+                const nameCell = rows[i].getElementsByTagName('td')[3]; // 第三列是菜品名稱
                 if (nameCell) {
                     const textValue = nameCell.textContent || nameCell.innerText;
                     // 如果菜品名稱包含查詢字串，顯示該行，否則隱藏
