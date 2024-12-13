@@ -1,0 +1,28 @@
+<html><head>
+<meta charset="utf-8">
+<title>我的評價</title></head>
+<h2>我的評價</h2>
+<ul class="menu">
+    <li><a href="SellerHome.html">首頁</a></li>
+    <li><a href="Menu.html">菜單管理</a></li>
+    <li><a href="Order.html">訂單管理</a></li>
+    <li><a href="Review.html">我的評價</a></li>
+    <li><a href="Statement.html">對帳單</a></li>
+    <li><a href="About.html">關於我</a></li>
+</ul>
+<table>
+    <tr>
+        <th>顧客評分</th>
+        <th>顧客評倫</th>
+        <th>回覆</th>
+    </tr>
+    {% for rec in data %}
+    <tr>
+        <td>{{rec.rating}}</td>
+        <td>{{rec.comment}}</td>
+        <td><textarea></textarea><input type="submit"/></td>
+    </tr>
+    {% endfor %}
+</table>
+</body></html>
+        

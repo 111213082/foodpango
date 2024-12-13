@@ -1,0 +1,31 @@
+<html><head>
+<meta charset="utf-8">
+<title>{{ session['rName'] }}</title></head>
+<h1>Welcome to {{ session['rName'] }}</h1>
+<ul class="menu">
+    <li><a href="SellerHome.html">首頁</a></li>
+    <li><a href="Menu.html">菜單管理</a></li>
+    <li><a href="Order.html">訂單管理</a></li>
+    <li><a href="Review.html">我的評價</a></li>
+    <li><a href="Statement.html">對帳單</a></li>
+    <li><a href="About.html">關於我</a></li>
+</ul>
+<p>是否營業</p>
+<label><input type="radio" name="active" value="開始營業"/>開始營業</label>
+<label><input type="radio" name="active" value="結束營業"/>結束營業</label><br/>
+<table>
+    <tr>
+        <th>餐點名稱</th>
+        <th>商品描述</th>
+        <th>價格</th>
+    </tr>
+    {% for rec in data %}
+    <tr>
+        <td>{{rec.name}}</td>
+        <td>{{rec.description}}</td>
+        <td>{{rec.price}}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="">登出</a>
+</body></html>
