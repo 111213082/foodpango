@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>FoodList</title>
+    <style>
+        h1 { text-align: center; /* 標題置中 */ }
+        body { margin: 50px; /* 移除整體的邊距 */ }
+        table {
+            width: 100%; /* 設置表格寬度為100% */
+            border-collapse: collapse; /* 合併邊框 */
+            margin: 0; /* 移除表格外的預設間距 */
+        }
+        td, th {
+            border: 2px solid #000; /* 設置表格邊框 */
+            padding: 10px; /* 設置內邊距 */
+            text-align: center; /* 文字置中 */
+        }
+        .search-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>菜品清單</h1>
+    <hr style="border: 5px solid black; width: 50%;">
+    <hr style="border: 1px solid black; width: 50%;">
+
+    <!-- 查詢框 -->
+    <div class="search-box">
+        <label for="searchInput">快速查詢:</label>
+        <input type="text" id="searchInput" placeholder="輸入菜品名稱" onkeyup="filterTable()">
+    </div>
+
+    <table id="foodTable">
+        <tr>
+            <th>選擇</th>
+            <th>編號</th>
+            <th>店家</th>
+            <th>菜品名稱</th>
+            <th>價格</th>
+            <th>剩餘數量</th>
+            <th>其他</th>
+            <th>示意圖</th>
+        </tr>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>Food.id</td>
+            <td>Food.shop</td>
+            <td>Food.name</td>
+            <td>Food.price</td>
+            <th>Food.number</th>
+            <td><a href="FoodDetail.html">查看詳情</a></td>
+            <td><img src="beef.jpg" alt="示意圖" width="50"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>1</td>
+            <td>小林麵店</td>
+            <td>紅燒牛肉麵</td>
+            <td>120</td>
+            <th>5</th>
+            <td><a href="FoodDetail.html">查看詳情</a></td>
+            <td><img src="beef.jpg" alt="示意圖" width="50"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>2</td>
+            <td>小王水餃</td>
+            <td>水餃</td>
+            <td>80</td>
+            <th>10</th>
+            <td><a href="FoodDetail.html">查看詳情</a></td>
+            <td><img src="dumpling.jpg" alt="示意圖" width="50"></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>3</td>
+            <td>阿黃快炒</td>
+            <td>宮保雞丁</td>
+            <td>150</td>
+            <th>3</th>
+            <td><a href="FoodDetail.html">查看詳情</a></td>
+            <td><img src="chicken.jpg" alt="示意圖" width="50"></td>
+        </tr>
+    </table>
+
+    <br><br><br>
+    <center>
+        <button onclick="addToCart()">加入購物車</button><br><br><br>
+        <a href="ShopCart.html">查看購物車</a>
+    </center>
+
+    <script>
+        function filterTable() {
+            // 取得輸入的查詢值
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase(); // 將輸入轉換為小寫
+            const table = document.getElementById('foodTable');
+            const rows = table.getElementsByTagName('tr'); // 取得所有行
+
+            // 從第二行開始遍歷表格的每一行
+            for (let i = 1; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[2]; // 第三列是菜品名稱
+                if (nameCell) {
+                    const textValue = nameCell.textContent || nameCell.innerText;
+                    // 如果菜品名稱包含查詢字串，顯示該行，否則隱藏
+                    rows[i].style.display = textValue.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+                }
+            }
+        }
+    </script>
+    <script>
+        function addToCart() {
+            // 取得購物車現有的數據（若無則設為空陣列）
+            let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    
+            // 遍歷表格中的每一行，找到勾選的商品
+            const rows = document.querySelectorAll("#foodTable tr");
+            rows.forEach((row, index) => {
+                if (index === 0) return; // 跳過表頭行
+                const checkbox = row.querySelector("input[type='checkbox']");
+                if (checkbox && checkbox.checked) {
+                    const item = {
+                        id: row.cells[1].innerText,          // 編號
+                        shop: row.cells[2].innerText,        // 店家
+                        name: row.cells[3].innerText,        // 菜品名稱
+                        price: row.cells[4].innerText,       // 價格
+                        quantity: row.cells[5].innerText,    // 剩餘數量
+                        image: row.cells[7].querySelector("img").src // 圖片路徑
+                    };
+    
+                    // 檢查是否已經存在相同編號的商品
+                    const existingItemIndex = cartItems.findIndex(cartItem => cartItem.id === item.id);
+                    if (existingItemIndex === -1) {
+                        // 如果不存在，新增商品
+                        cartItems.push(item);
+                    } else {
+                        // 如果已存在，可選擇更新或跳過（這裡選擇跳過）
+                        alert(`${item.name} 已存在於購物車中！`);
+                    }
+                }
+            });
+    
+            // 更新 localStorage
+            localStorage.setItem("cartItems", JSON.stringify(cartItems));
+            alert("商品已加入購物車！");
+        }
+    </script>
+</body>
+</html>
