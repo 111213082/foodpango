@@ -4,44 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>外送員主畫面</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>外送員主畫面</h1>
-
-    <h2>已接單列表</h2>
-    <ul>
-        {% for order in accepted_orders %}
-            <li>
-                訂單編號 {{ order.oID }}: 
-                地址: {{ order.address }} - 總價: {{ order.totalPrice }}元
-                <br> 備註: {{ order.note }}
-            </li>
-        {% endfor %}
-    </ul>
-
-    <h2>待接單列表</h2>
-    <ul>
-        {% for order in pending_orders %}
-            <li>
-                訂單編號 {{ order.oID }}: 
-                地址: {{ order.address }} - 總價: {{ order.totalPrice }}元
-                <br> 備註: {{ order.note }}
-                <button class="accept-btn" data-order-id="{{ order.oID }}">接單</button>
-            </li>
-        {% endfor %}
-    </ul>
-
-    <script>
-        $(document).on('click', '.accept-btn', function() {
-            const orderId = $(this).data('order-id');
-            $.post('/bro_home', { order_id: orderId }, function(response) {
-                alert(response.message);
-                if (response.success) {
-                    location.reload();
-                }
-            });
-        });
-    </script>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>訂單編號</th>
+                <th>顧客名稱</th>
+                <th>餐廳名稱</th>
+                <th>地址</th>
+                <th>備註</th>
+                <th>狀態</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.oID }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.restaurant_name }}</td>
+                <td>{{ order.address }}</td>
+                <td>{{ order.note }}</td>
+                <td>{{ order.status }}</td>
+                <td>
+                    {% if order.status == '待接單' %}
+                    <form action="/accept_order/{{ order.oID }}" method="POST">
+                        <button type="submit">接單</button>
+                    </form>
+                    {% else %}
+                    已被接單
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

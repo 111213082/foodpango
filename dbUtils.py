@@ -11,25 +11,23 @@ def get_db_connection():
     return connection
 
 
-#查詢訂單邏輯
-def get_orders():
+#抓所有訂單
+def get_all_orders():
     sql = """
-    SELECT o.oID, o.note, o.status, o.totalPrice, 
-           c.name AS customer_name, 
-           r.name AS restaurant_name, 
-           o.address, o.createdAt
+    SELECT o.oID, c.name AS customer_name, r.name AS restaurant_name, o.address, o.note, o.status
     FROM `order` o
     JOIN customer c ON o.cID = c.cID
     JOIN restaurant r ON o.rID = r.rID
     ORDER BY FIELD(o.status, '待接單', '已接單'), o.createdAt
     """
-    connection = get_db_connection()
+    conn = get_db_connection()
     try:
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            return cursor.fetchall()  # 返回所有訂單
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(sql)
+        return cursor.fetchall()  # 返回所有訂單資料
     finally:
-        connection.close()
+        conn.close()
+
 
 #接單(待--->已)
 def accept_order(oID, bID):
@@ -38,11 +36,12 @@ def accept_order(oID, bID):
     SET status = '已接單', bID = %s
     WHERE oID = %s AND status = '待接單'
     """
-    connection = get_db_connection()
+    conn = get_db_connection()
     try:
-        with connection.cursor() as cursor:
-            affected_rows = cursor.execute(sql, (bID, oID))
-            connection.commit()
-            return affected_rows  # 返回受影響行數
+        cursor = conn.cursor()
+        affected_rows = cursor.execute(sql, (bID, oID))
+        conn.commit()
+        return affected_rows > 0  # 是否成功更新
     finally:
-        connection.close()
+        conn.close()
+
