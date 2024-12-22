@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        /* Style the body */
+        body {
+            font-family: Playfair Display;
+			
+            background-color: #f0ead2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Center the login form container */
+        .login-container {
+            background-color: #ffffff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        /* Style the heading */
+        h2 {
+            color: #333333;
+        }
+
+        /* Style form labels */
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        /* Style input fields */
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Style the submit button */
+        button {
+            background-color: #a5a58d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Button hover effect */
+        button:hover {
+            background-color: #6b705c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Login</h2><hr><br>
+        <form action="/login" method="POST">
+            <label for="EMAIL">email:</label>
+            <input type="email" name="EMAIL" required>
+            <label for="PWD">password:</label>
+            <input type="password" name="PWD" required>
+            角色：
+            <label><input type="radio" name="role" value="customer"required> 顧客</label>
+            <label><input type="radio" name="role" value="restaurant"> 餐廳</label>
+            <label><input type="radio" name="role" value="bro"> 外送員</label>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>送貨小哥註冊</title>
+</head>
+<body>
+    <h1>送貨小哥註冊</h1>
+    <form method="POST" action="/register/bro">
+        <label>姓名：<input type="text" name="name" required></label><br>
+        <label>電子郵件：<input type="email" name="email" required></label><br>
+        <label>密碼：<input type="password" name="password" required></label><br>
+        <label>電話：<input type="text" name="phone" required></label><br>
+        <label>銀行帳號：<input type="text" name="bank" required></label><br>
+        <label>是否完成驗證：
+            <select name="verification" required>
+                <option value="1">是</option>
+                <option value="0">否</option>
+            </select>
+        </label><br>
+        <button type="submit">註冊</button>
+    </form>
+</body>
+</html>
