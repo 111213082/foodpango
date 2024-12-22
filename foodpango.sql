@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-12-22 08:26:33
+-- 產生時間： 2024-12-22 09:47:46
 -- 伺服器版本： 10.4.28-MariaDB
 -- PHP 版本： 8.2.4
 
@@ -109,6 +109,14 @@ CREATE TABLE `discount` (
   `amount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- 傾印資料表的資料 `discount`
+--
+
+INSERT INTO `discount` (`dID`, `name`, `description`, `discountType`, `amount`) VALUES
+(1, '周五訂外送', '消費滿300元可折抵20元', 'fixed', 20.00),
+(2, '哈囉你好嗎', '消費滿500元享85折優惠', 'percentage', 15.00);
+
 -- --------------------------------------------------------
 
 --
@@ -125,6 +133,38 @@ CREATE TABLE `food` (
   `description` text NOT NULL,
   `is_available` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- 傾印資料表的資料 `food`
+--
+
+INSERT INTO `food` (`fID`, `rID`, `ID`, `name`, `price`, `is_vegetarian`, `description`, `is_available`) VALUES
+(1, 1, 1, '綜合義式冷肉拼盤', 380, 0, '義式火腿、臘腸、起司拼盤', 1),
+(2, 1, 1, '卡布里沙拉', 250, 1, '新鮮乳酪、番茄、羅勒', 1),
+(3, 1, 1, '烤大蒜蝦', 300, 0, '鮮蝦搭配香料大蒜烘烤', 1),
+(4, 1, 2, '番茄羅勒湯', 180, 1, '義大利經典番茄湯搭配羅勒', 1),
+(5, 1, 2, '奶油南瓜湯', 200, 1, '濃郁奶油與香甜南瓜融合', 1),
+(6, 1, 3, '卡邦尼義大利麵', 350, 0, '蛋黃、培根、帕瑪森起司的完美結合', 1),
+(7, 1, 3, '羅勒青醬義大利麵', 320, 1, '新鮮羅勒、松子、橄欖油特製醬料', 1),
+(8, 1, 3, '海鮮番茄義大利麵', 400, 0, '鮮蝦、蛤蜊與番茄醬的經典組合', 1),
+(9, 1, 4, '瑪格麗特披薩', 300, 1, '番茄醬、乳酪、羅勒葉', 1),
+(10, 1, 4, '義式香腸披薩', 400, 0, '手工香腸、番茄醬、辣椒粉', 1),
+(11, 1, 5, '提拉米蘇', 220, 0, '義大利經典咖啡甜點', 1),
+(12, 1, 5, '義式奶酪', 180, 0, '搭配新鮮莓果醬', 1),
+(13, 1, 6, '義式濃縮咖啡', 80, 1, '香濃濃縮咖啡', 1),
+(14, 1, 6, '卡布奇諾', 120, 1, '義大利咖啡搭配綿密奶泡', 1),
+(15, 1, 6, '自製檸檬氣泡水', 100, 1, '清爽解膩的氣泡水', 1),
+(16, 2, 7, '香草冰淇淋', 80, 0, '經典香草風味，入口即化', 1),
+(17, 2, 7, '巧克力冰淇淋', 90, 0, '濃郁巧克力，適合甜點愛好者', 1),
+(18, 2, 7, '草莓冰淇淋', 90, 0, '新鮮草莓製成，酸甜可口', 1),
+(19, 2, 11, '抹茶冰淇淋', 100, 0, '日本宇治抹茶，清新微苦', 1),
+(20, 2, 11, '焦糖海鹽冰淇淋', 110, 0, '焦糖甜中帶鹹，口感層次豐富', 1),
+(21, 2, 11, '芒果冰淇淋', 120, 0, '熱帶芒果香氣，清爽消暑', 1),
+(22, 2, 12, '巧克力聖代', 150, 0, '巧克力冰淇淋搭配巧克力醬、堅果碎', 1),
+(23, 2, 12, '水果冰淇淋杯', 160, 0, '香草冰淇淋配上當季水果', 1),
+(24, 2, 12, '奶昔冰品杯', 170, 0, '奶昔基底，搭配奶油與餅乾屑', 1),
+(25, 2, 13, '熱帶水果冰沙', 130, 0, '芒果、鳳梨、西瓜清新混合', 1),
+(26, 2, 13, '藍莓優格冰沙', 140, 0, '健康藍莓配優格，酸甜滋味', 1);
 
 -- --------------------------------------------------------
 
@@ -182,11 +222,14 @@ INSERT INTO `restaurant` (`rID`, `name`, `email`, `password`, `phone`, `address`
 
 CREATE TABLE `star` (
   `sID` int(11) NOT NULL,
+  `oID` int(11) NOT NULL,
   `cID` int(11) NOT NULL,
   `rID` int(11) NOT NULL,
   `bID` int(11) NOT NULL,
-  `rate` int(11) DEFAULT NULL CHECK (`rate` between 1 and 5),
-  `comment` text DEFAULT NULL
+  `rateR` int(1) NOT NULL,
+  `rateD` int(1) NOT NULL,
+  `commentR` text DEFAULT NULL,
+  `commentD` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -252,7 +295,8 @@ ALTER TABLE `star`
   ADD PRIMARY KEY (`sID`),
   ADD KEY `bID` (`bID`),
   ADD KEY `cID` (`cID`),
-  ADD KEY `rID` (`rID`);
+  ADD KEY `rID` (`rID`),
+  ADD KEY `oID` (`oID`);
 
 --
 -- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
@@ -280,13 +324,13 @@ ALTER TABLE `customer`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `discount`
 --
 ALTER TABLE `discount`
-  MODIFY `dID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `dID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `food`
 --
 ALTER TABLE `food`
-  MODIFY `fID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `fID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order`
@@ -338,7 +382,8 @@ ALTER TABLE `order`
 ALTER TABLE `star`
   ADD CONSTRAINT `star_ibfk_1` FOREIGN KEY (`bID`) REFERENCES `bro` (`bID`),
   ADD CONSTRAINT `star_ibfk_2` FOREIGN KEY (`cID`) REFERENCES `customer` (`cID`),
-  ADD CONSTRAINT `star_ibfk_3` FOREIGN KEY (`rID`) REFERENCES `food` (`fID`);
+  ADD CONSTRAINT `star_ibfk_3` FOREIGN KEY (`rID`) REFERENCES `food` (`fID`),
+  ADD CONSTRAINT `star_ibfk_4` FOREIGN KEY (`oID`) REFERENCES `order` (`oID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
