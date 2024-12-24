@@ -1,0 +1,18 @@
+資料庫操作foodpangolin
+
+展開／摺疊結構bro
+         bID	name	email	password	phone	verification	bank	
+展開／摺疊結構categories
+         ID rID name
+展開／摺疊結構customer
+         	cID	name	email	password	card	phone	address	
+展開／摺疊結構discount
+            dID	name	description	discountType	amount	
+展開／摺疊結構food
+           fID  rID  ID name  price  is_vegetarian  description  is_available
+展開／摺疊結構order
+           oID	cID	rID	bID	dID	status	totalPrice	note	address	createdAt	
+展開／摺疊結構restaurant
+           rID  name  email  password  phone  address  license  bank  is_active  announcement
+展開／摺疊結構star
+           sID	cID	rID	bID	rate	comment	
