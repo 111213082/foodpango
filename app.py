@@ -15,7 +15,6 @@ from dbUtils import validate_user#, register_customer,register_restaurant,regist
 import json
 >>>>>>> d3f1586 (商家)
 
-app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # 用於管理 session
 
 @app.route("/")
