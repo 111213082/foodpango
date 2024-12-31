@@ -2,8 +2,9 @@
 <meta charset="utf-8">
 <title>聯絡外送員</title></head>
 <h2>聯絡外送員</h2>
-<p>訂單準備時間大約: <input type="number"/></p>
-其他備註:<textarea></textarea>
-<input type="submit" value="送出"/>
+<form method="POST" action="{{ url_for('acceptFood', oID=oID) }}">
+    <p>訂單準備時間大約: <input type="number" name="prepareTime" required min="1" /> 分鐘</p>
+    <button type="submit">送出</button>
+</form>
 </body></html>
         
