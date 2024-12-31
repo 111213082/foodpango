@@ -1,5 +1,7 @@
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from dbUtils import get_db_connection
+
 
 
 
@@ -159,6 +161,7 @@ def ratings():
     if selected_star:
         query += " AND s.rateB = %s"
         params.append(selected_star)
+
 
     cursor.execute(query, tuple(params))
     ratings = cursor.fetchall()
