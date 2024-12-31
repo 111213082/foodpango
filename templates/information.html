@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人資料管理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .info-group {
+            margin-bottom: 15px;
+        }
+        .info-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .info-group .info {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .edit-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .edit-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">個人資料管理</div>
+        <div class="info-group">
+            <label>編號：</label>
+            <div class="info" id="cID">{{ customer_data['cID'] }}</div>
+        </div>
+            <label>姓名：</label>
+            <div class="info" id="name">{{ customer_data['name'] }}</div>
+        </div>
+        <div class="info-group">
+            <label>電子郵件：</label>
+            <div class="info" id="email">{{ customer_data['email'] }}</div>
+        </div>
+        <div class="info-group">
+            <label>電話號碼：</label>
+            <div class="info" id="phone">{{ customer_data['phone'] }}</div>
+        </div>
+        <div class="info-group">
+            <label>地址：</label>
+            <div class="info" id="address">{{ customer_data['address'] }}</div>
+        </div>
+        <div class="info-group">
+            <label>綁定信用卡號：</label>
+            <div class="info" id="card">{{ customer_data['card'] }}</div>
+        </div>
+        <a href="/edit" class="edit-button">編輯個人資料</a>
+    </div>
+<br><br><br>
+<center>
+    <button onclick="location.href='//localhost:5000/customer/dashboard'">回到主畫面</button>
+
+</body>
+</center>
+    
+</body>
+</html>

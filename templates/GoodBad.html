@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品與服務評價</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        .rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .rating span {
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .rating span:hover,
+        .rating span.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+    </style>
+    <script>
+        function selectRating(element, inputId) {
+            const allRatings = element.parentElement.querySelectorAll('span');
+            allRatings.forEach(span => span.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById(inputId).value = element.getAttribute('data-value');
+        }
+    </script>
+</head>
+<body>
+    <h1>商品與服務評價</h1>
+    <p>請選擇您對店家和送貨小哥的評分，並留下您的評論。</p>
+
+    <!-- 評價表單 -->
+    <form action="/submit" method="POST" id="ratingForm">
+        <div class="section">
+            <h2>店家評價</h2>
+            <div class="rating">
+                <span data-value="1" onclick="selectRating(this, 'store_rating')">1</span>
+                <span data-value="2" onclick="selectRating(this, 'store_rating')">2</span>
+                <span data-value="3" onclick="selectRating(this, 'store_rating')">3</span>
+                <span data-value="4" onclick="selectRating(this, 'store_rating')">4</span>
+                <span data-value="5" onclick="selectRating(this, 'store_rating')">5</span>
+            </div>
+            <input type="hidden" name="store_rating" id="store_rating">
+            <textarea name="store_comment" placeholder="請輸入您對店家的評論..."></textarea><br>
+        </div>
+
+        <div class="section">
+            <h2>送貨小哥評價</h2>
+            <div class="rating">
+                <span data-value="1" onclick="selectRating(this, 'delivery_rating')">1</span>
+                <span data-value="2" onclick="selectRating(this, 'delivery_rating')">2</span>
+                <span data-value="3" onclick="selectRating(this, 'delivery_rating')">3</span>
+                <span data-value="4" onclick="selectRating(this, 'delivery_rating')">4</span>
+                <span data-value="5" onclick="selectRating(this, 'delivery_rating')">5</span>
+            </div>
+            <input type="hidden" name="delivery_rating" id="delivery_rating">
+            <textarea name="delivery_comment" placeholder="請輸入您對送貨小哥的評論..."></textarea><br>
+        </div>
+
+        <!-- 假設oID是訂單ID，這裡可以使用隱藏欄位 -->
+        <input type="hidden" name="oID" value="12345"> <!-- 這是示範ID，實際應該動態生成 -->
+
+        <!-- 提交按鈕 -->
+        <button type="submit">提交評價</button>
+    </form>
+</body>
+</html>

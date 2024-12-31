@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>購物車</title>
+    <style>
+        h1 { text-align: center; }
+        body { margin: 50px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        td, th {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>購物車</h1>
+    <hr style="border: 5px solid black; width: 50%;">
+    <hr style="border: 1px solid black; width: 50%;">
+
+    <table id="cartTable">
+        <tr>
+            <th>
+                <input type="checkbox" id="selectAll" onclick="selectAllItems(this)">
+                全選
+            </th>
+            <th>編號</th>
+            <th>菜品名稱</th>
+            <th>數量</th>
+            <th>價格</th>
+            <th>店家</th>
+            <th>操作</th>
+        </tr>
+    </table>
+
+    <center>
+        <div class="total">
+            <p>總金額: <span id="totalAmount">0</span> 元</p>
+        </div>
+    </center>
+
+    <center>
+        <div>
+            <label for="orderNotes">點餐備註:</label><br>
+            <textarea id="orderNotes" rows="4" cols="50" placeholder="在這裡輸入您的備註，例如：請多放辣椒"></textarea>
+        </div>
+    </center>
+
+    <center>
+        <div>
+            <label for="paymentMethod">選擇付款方式:</label>
+            <select id="paymentMethod">
+                <option value="" disabled selected>請選擇付款方式</option>
+                <option value="credit_card">信用卡</option>
+                <option value="cash">現金</option>
+            </select>
+            <br><br>
+            <label for="addressInput">送餐地址:</label>
+            <input type="text" id="addressInput" placeholder="請輸入送餐地址">
+            <br><br>
+            <button onclick="confirmOrder()">確認下單</button><br><br>
+        </div>
+        <button onclick="window.history.back()">回到上一頁</button>
+        <br><br>
+        <a href="/ShopList">回到商店清單</a>
+    </center>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+            if (cartItems.length === 0) {
+                alert("購物車是空的！");
+                return;
+            }
+
+            const cartTable = document.getElementById("cartTable");
+
+            cartItems.forEach(item => {
+                const row = cartTable.insertRow();
+                const quantityOptions = Array.from({ length: 20 }, (_, i) => i + 1)
+                    .map(num => `<option value="${num}" ${num === item.quantity ? 'selected' : ''}>${num}</option>`)
+                    .join('');
+
+                row.innerHTML = `
+                    <td><input type="checkbox" class="cart-checkbox" data-id="${item.id}" data-shop="${item.shop}" onclick="validateSelection(this)"></td>
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>
+                        <select class="quantity-select" id="quantity-${item.id}" onchange="updateQuantity(${item.id})">
+                            ${quantityOptions}
+                        </select>
+                    </td>
+                    <td>${item.price}</td>
+                    <td>${item.shop}</td>
+                    <td><button onclick="removeItem(${item.id})">刪除</button></td>
+                `;
+            });
+
+            updateTotalAmount();
+        });
+
+        function selectAllItems(checkbox) {
+            const checkboxes = document.querySelectorAll(".cart-checkbox");
+            const firstShop = checkboxes[0]?.dataset.shop;
+            let allSameShop = true;
+
+            checkboxes.forEach(cb => {
+                if (cb.dataset.shop !== firstShop) {
+                    allSameShop = false;
+                }
+            });
+
+            if (!allSameShop) {
+                alert("只能選擇同一家店的商品！");
+                checkbox.checked = false;
+                return;
+            }
+
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateTotalAmount();
+        }
+
+        function validateSelection(checkbox) {
+            const selectedCheckboxes = document.querySelectorAll(".cart-checkbox:checked");
+            const currentShop = checkbox.dataset.shop;
+
+            const invalidSelection = Array.from(selectedCheckboxes).some(cb => cb.dataset.shop !== currentShop);
+
+            if (invalidSelection) {
+                alert("只能選擇同一家店的商品！");
+                checkbox.checked = false;
+                return;
+            }
+
+            updateTotalAmount();
+        }
+
+        function updateQuantity(itemId) {
+            let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+            const item = cartItems.find(item => item.id === String(itemId));
+            const quantity = parseInt(document.getElementById(`quantity-${itemId}`).value, 10);
+
+            if (item) {
+                item.quantity = quantity;
+                localStorage.setItem("cartItems", JSON.stringify(cartItems));
+            }
+
+            updateTotalAmount();
+        }
+
+        function removeItem(itemId) {
+            if (confirm("確定要刪除此商品嗎？")) {
+                let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+                cartItems = cartItems.filter(item => item.id !== String(itemId));
+                localStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+                const row = document.querySelector(`.cart-checkbox[data-id="${itemId}"]`).closest("tr");
+                if (row) {
+                    row.remove();
+                }
+
+                updateTotalAmount();
+
+                if (cartItems.length === 0) {
+                    alert("購物車是空的！");
+                }
+            }
+        }
+
+        function updateTotalAmount() {
+            let totalAmount = 0;
+            const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+            cartItems.forEach(item => {
+                const rowCheckbox = document.querySelector(`.cart-checkbox[data-id="${item.id}"]`);
+
+                if (rowCheckbox && rowCheckbox.checked) {
+                    const quantity = parseInt(document.getElementById(`quantity-${item.id}`).value, 10);
+                    totalAmount += parseFloat(item.price) * quantity;
+                }
+            });
+
+            document.getElementById("totalAmount").innerText = totalAmount.toFixed(2);
+        }
+
+        function confirmOrder() {
+    const totalAmount = parseFloat(document.getElementById("totalAmount").innerText);
+
+    if (totalAmount === 0) {
+        alert("請選擇商品後再下單！");
+        return;
+    }
+
+    const orderNotes = document.getElementById("orderNotes").value;
+    const paymentMethod = document.getElementById("paymentMethod").value;
+    const address = document.getElementById("addressInput").value;
+
+    if (!paymentMethod) {
+        alert("請選擇付款方式！");
+        return;
+    }
+
+    const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const selectedItems = cartItems.filter(item => document.querySelector(`.cart-checkbox[data-id="${item.id}"]`).checked);
+
+    if (selectedItems.length === 0) {
+        alert("請至少選擇一種商品！");
+        return;
+    }
+
+    // 客戶和餐廳的ID應從登入和選擇狀態獲取
+    const cID = 123; // 假設的顧客ID
+    const rID = selectedItems[0].shop; // 店家ID (假設店家和shop對應)
+
+    // 組織訂單資料
+    const orderData = {
+        cID: cID,
+        rID: rID,
+        totalPrice: totalAmount,
+        note: orderNotes,
+        address: address,
+        createdAt: new Date().toISOString(), // 當前時間
+        details: selectedItems.map(item => ({
+            fID: item.id,
+            quantity: item.quantity,
+            price: item.price,
+        })),
+    };
+
+    // 發送訂單和詳情到後端
+    fetch('/api/createOrderWithDetails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("訂單已成功提交！");
+            localStorage.removeItem("cartItems");
+            window.location.href = `/Trace?order_id=${data.order_id}`;
+        } else {
+            alert("訂單提交失敗：" + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("錯誤：", error);
+        alert("發生錯誤，請稍後再試。");
+    });
+}
+
+    </script>
+</body>
+</html>
