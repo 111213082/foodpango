@@ -1,0 +1,16 @@
+<html><head>
+    <meta charset="utf-8">
+    <title>修改我的資料</title></head>
+    <h2>修改我的資料</h2>
+    <form method="POST" action="{{ url_for('editME', rID=rID) }}">
+        <label>餐聽名稱: <input type="text" name="name" value="{{ restaurant_info['name'] }}" ></label><br>
+        <label>電子郵件: <input type="text" name="email" value="{{ restaurant_info['email'] }}"></label><br>
+        <label>聯絡電話: <input type="text" name="phone" value="{{ restaurant_info['phone'] }}" ></label><br>
+        <label>地址: <input type="text" name="address" value="{{ restaurant_info['address'] }}" ></label><br>
+        <label>銀行帳號: <input type="text" name="bank" value="{{ restaurant_info['bank'] }}" ></label><br>
+        <label>營業時間: <textarea type="text" name="time" >{{ restaurant_info['time'] }}</textarea></label><br>
+        <button type="submit">提交修改</button>
+        <button><a href="{{ url_for('aboutME', rID=rID) }}">取消</a></button>
+    </form>
+</body></html>
+            

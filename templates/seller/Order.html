@@ -2,50 +2,47 @@
 <meta charset="utf-8">
 <title>訂單管理</title></head>
 <h2>訂單管理</h2>
-<ul class="menu">
-    <li><a href="SellerHome.html">首頁</a></li>
-    <li><a href="Menu.html">菜單管理</a></li>
-    <li><a href="Order.html">訂單管理</a></li>
-    <li><a href="Review.html">我的評價</a></li>
-    <li><a href="Statement.html">對帳單</a></li>
-    <li><a href="About.html">關於我</a></li>
-</ul>
+{% include 'seller/base.html' %}
 <h3>待接單</h3>
-<table>
-    <tr>
-        <th>顧客ID</th>
-        <th>餐點</th>
-        <th>備註</th>
-        <th>總金額</th>
-        <th>是否接單</th>
-    </tr>
-    {% for rec in data %}
-    <tr>
-        <td>{{rec.cID}}</td>
-        <td>{{rec.food}}</td>
-        <td>{{rec.description}}</td>
-        <td>{{rec.price}}</td>
-        <td><button><a href="ContactBro.html">確認接單</a></button>&nbsp;<button><a href="ContactCostumer.html">拒絕接單</a></button></td>
-    </tr>
-    {% endfor %}
-</table>
-<h3>已接單</h3>
-<table>
-    <tr>
-        <th>顧客ID</th>
-        <th>餐點</th>
-        <th>備註</th>
-        <th>總金額</th>
-        <th>聯絡</th>
-    </tr>
-    {% for rec in data %}
-    <tr>
-        <td>{{rec.cID}}</td>
-        <td>{{rec.food}}</td>
-        <td>{{rec.description}}</td>
-        <td>{{rec.price}}</td>
-        <td><button><a href="ContactBro.html">外送員</a></button>&nbsp;<button><a href="ContactCostumer.html">顧客</a></button></td>
-    {% endfor %}
-</table>
-</body></html>
-    
+    <table>
+        <tr>
+            <th>顧客ID</th>
+            <th>餐點</th>
+            <th>備註</th>
+            <th>總金額</th>
+            <th>操作</th>
+        </tr>
+        {% for rec in order_list %}
+        <tr>
+            <td>{{ rec.cID }}</td>
+            <td>{{ rec.food_list }}</td>
+            <td>{{ rec.description }}</td>
+            <td>{{ rec.totalPrice }}</td>
+            <td>
+                <form method="post" action="{{ url_for('accept_food', oID=rec.oID) }}" style="display: inline;">
+                    <button type="submit">確認接單</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>已接單</h3>
+    <table>
+        <tr>
+            <th>顧客ID</th>
+            <th>餐點</th>
+            <th>備註</th>
+            <th>總金額</th>
+        </tr>
+        {% for rec in accepted_orders %}
+        <tr>
+            <td>{{ rec.cID }}</td>
+            <td>{{ rec.food }}</td>
+            <td>{{ rec.description }}</td>
+            <td>{{ rec.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
