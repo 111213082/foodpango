@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>待送訂單</title>
+    <title>訂單詳情</title>
     <style>
         /* Reset */ ㄖ  
         * {
@@ -108,24 +108,13 @@
     </style>
 </head>
 <body>
-    <div class="button-container">
-        <a href="{{ url_for('pending_orders') }}" class="button">增加我的工作量</a>
-        <a href="{{ url_for('orders_status') }}" class="button">查看我的工作量</a>
-        <a href="{{ url_for('ratings') }}" class="button">世人對我的態度</a>
-    </div>
-    <h1>待接訂單</h1>
-    <ul>
-        {% for order in orders %}
-            <li>
-                <p>訂單編號: {{ order['oID'] }}</p>
-                <p>顧客地址: {{ order['address'] }}</p>
-                <p>總金額: ${{ order['totalPrice'] }}</p>
-                <p>備註: {{ order['note'] }}</p>
-                <form action="{{ url_for('accept_order', oID=order['oID']) }}" method="post">
-                    <button type="submit">接單</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
+    <h1>訂單詳情</h1>
+    <p>訂單編號：{{ order['oID'] }}</p>
+    <p>總金額：${{ order['totalPrice'] }}</p>
+    <p>地址：{{ order['address'] }}</p>
+    <p>備註：{{ order['note'] }}</p>
+    <p>建立時間：{{ order['createdAt'] }}</p>
+
+    <a href="{{ url_for('ratings') }}">返回評價列表</a>
 </body>
 </html>

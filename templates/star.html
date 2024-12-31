@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>待送訂單</title>
+    <title>我的評價</title>
     <style>
         /* Reset */ ㄖ  
         * {
@@ -113,16 +113,31 @@
         <a href="{{ url_for('orders_status') }}" class="button">查看我的工作量</a>
         <a href="{{ url_for('ratings') }}" class="button">世人對我的態度</a>
     </div>
-    <h1>待接訂單</h1>
+
+    <h1>我的評價</h1>
+    
+    <h2>平均評分：{{ avg_rating|round(2) }} ★</h2>
+
+    <!-- 篩選星級 -->
+    <form method="POST" action="{{ url_for('ratings') }}" id="star_filter_form">
+        <label for="star_filter">篩選星級：</label>
+        <select name="star_filter" id="star_filter" onchange="this.form.submit()">
+            <option value="">所有評價</option>
+            {% for i in range(1, 6) %}
+                <option value="{{ i }}" {% if selected_star == i|string %}selected{% endif %}>
+                    {{ i }} 星
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
     <ul>
-        {% for order in orders %}
+        {% for rating in ratings %}
             <li>
-                <p>訂單編號: {{ order['oID'] }}</p>
-                <p>顧客地址: {{ order['address'] }}</p>
-                <p>總金額: ${{ order['totalPrice'] }}</p>
-                <p>備註: {{ order['note'] }}</p>
-                <form action="{{ url_for('accept_order', oID=order['oID']) }}" method="post">
-                    <button type="submit">接單</button>
+                <p>評分：{{ '★' * rating['rateB'] }} ({{ rating['rateB'] }})</p>
+                <p>評論：{{ rating['commentB'] }}</p>
+                <form action="{{ url_for('order_details', oID=rating['oID']) }}" method="GET">
+                    <button type="submit">查看訂單詳情</button>
                 </form>
             </li>
         {% endfor %}
