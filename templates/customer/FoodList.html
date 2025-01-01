@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>店家菜品清單</title>
+    <style>
+        h1 { text-align: center; }
+        body { margin: 50px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        td, th {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        #searchInput {
+            width: 50%;
+            padding: 10px;
+            margin: 20px auto;
+            display: block;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>菜品清單</h1>
+    <hr style="border: 5px solid black; width: 50%;">
+    <hr style="border: 1px solid black; width: 50%;">
+    <center>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="輸入關鍵字進行查詢" onkeyup="filterTable()">
+        </div>
+    </center>
+    {% if foods %}
+    <table id="foodTable">
+        <tr>
+            <th>選擇</th>
+            <th>編號</th>
+            <th>菜品名稱</th>
+            <th>價格</th>
+            <th>店家</th>
+            <th>其他</th>
+        </tr>
+        {% for food in foods %}
+        <tr>
+            <td>
+                <input type="checkbox" 
+                       data-id="{{ food.fID }}" 
+                       data-name="{{ food.name }}" 
+                       data-price="{{ food.price }}" 
+                       data-shop="{{ food.shopName }}">
+            </td>
+            <td>{{ food.fID }}</td>
+            <td class="food-name">{{ food.name }}</td>
+            <td>{{ food.price }}</td>
+            <td class="food-shop">{{ food.shopName }}</td>
+            <td><a href="/food/{{ food.fID }}">查看詳情</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>沒有找到任何菜品。</p>
+    {% endif %}
+
+    <center>
+        <br><br><br>
+        <button onclick="addToCart()">加入購物車</button><br><br><br>
+        <a href="/ShopCart">查看購物車</a><br><br><br>
+        <a href="/ShopList">回到商店清單</a>
+    </center>
+
+    <script>
+        // 快速查找功能
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#foodTable tr:not(:first-child)");
+
+            rows.forEach(row => {
+                const foodName = row.querySelector(".food-name").textContent.toLowerCase();
+                const shopName = row.querySelector(".food-shop").textContent.toLowerCase();
+
+                if (foodName.includes(filter) || shopName.includes(filter)) {
+                    row.style.display = ""; // 顯示符合條件的行
+                } else {
+                    row.style.display = "none"; // 隱藏不符合條件的行
+                }
+            });
+        });
+
+        // 添加到購物車功能
+        function addToCart() {
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    const checkboxes = document.querySelectorAll("#foodTable input[type='checkbox']:checked");
+    
+    // 檢查是否有勾選任何項目
+    if (checkboxes.length === 0) {
+        alert("請選擇至少一個商品加入購物車！");
+        return; // 如果沒有勾選，直接返回
+    }
+
+    checkboxes.forEach(checkbox => {
+        const item = {
+            id: checkbox.getAttribute('data-id'),
+            name: checkbox.getAttribute('data-name'),
+            price: checkbox.getAttribute('data-price'),
+            shop: checkbox.getAttribute('data-shop'),
+            quantity: 1
+        };
+
+        // 檢查此商品是否已經在購物車中
+        const existingItemIndex = cartItems.findIndex(cartItem => cartItem.id === item.id);
+        if (existingItemIndex === -1) {
+            cartItems.push(item);
+            console.log(`加入購物車: ${item.name} (店家: ${item.shop})`);
+        } else {
+            alert(`${item.name} 已存在於購物車中！`);
+        }
+    });
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    alert("商品已加入購物車！");
+}
+    </script>
+
+</body>
+</html>

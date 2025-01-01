@@ -1,0 +1,28 @@
+<!-- templates/edit_profile.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>編輯個人資料</title>
+</head>
+<body>
+    <h1>編輯個人資料</h1>
+    <form method="POST" action="{{ url_for('update_profile') }}">
+        <label for="name">姓名：</label>
+        <input type="text" id="name" name="name" value="{{ customer_data['name'] }}" required><br><br>
+
+        <label for="phone">電話：</label>
+        <input type="text" id="phone" name="phone" value="{{ customer_data['phone'] }}" required><br><br>
+
+        <label for="address">地址：</label>
+        <input type="text" id="address" name="address" value="{{ customer_data['address'] }}" required><br><br>
+
+        <label for="card_number">付款卡號：</label>
+        <input type="text" id="card" name="card" value="{{ customer_data['card'] }}" required><br><br>
+
+        <button type="submit">儲存更改</button>
+    </form>
+    <br>
+    <a href="{{ url_for('customer_information') }}">返回顧客資料</a>
+</body>
+</html>

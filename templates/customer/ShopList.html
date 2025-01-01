@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ShopList</title>
+    <style>
+        h1 { text-align: center; }
+        h3 { text-align: center; }
+        body { margin: 50px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        td, th {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        .search-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+    <script>
+        // 檢查哪些店家被勾選並將其 ID 傳遞給 FoodList 頁面
+        function getCheckedShops() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    const shopIds = [];
+    checkboxes.forEach(checkbox => {
+        const row = checkbox.closest('tr');
+        const shopId = row.cells[1].innerText; // 假設店家編號在第二列
+        shopIds.push(shopId);
+    });
+
+    // 檢查是否有勾選店家
+    let queryString = shopIds.length > 0 ? shopIds.join(',') : '';
+    
+    // 如果沒有勾選，queryString 為空，預設顯示所有菜品
+    window.location.href = "/FoodList" + (queryString ? "?shopIds=" + queryString : "");
+}
+
+        // 查詢功能
+        function filterTable() {
+            // 取得輸入的查詢值
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase(); // 將輸入轉換為小寫
+            const table = document.getElementById('shopTable');
+            const rows = table.getElementsByTagName('tr'); // 取得所有行
+
+            // 從第二行開始遍歷表格的每一行
+            for (let i = 1; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[2]; // 第三列是店家名稱
+                if (nameCell) {
+                    const textValue = nameCell.textContent || nameCell.innerText;
+                    // 如果店家名稱包含查詢字串，顯示該行，否則隱藏
+                    rows[i].style.display = textValue.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>店家清單</h1>
+    <h3>選擇心儀的店家，快速鎖定美食</h3>
+    <hr style="border: 5px solid black; width: 50%;">
+    <hr style="border: 1px solid black; width: 50%;">
+
+    <!-- 查詢框 -->
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="輸入店家名稱" onkeyup="filterTable()">
+    </div>
+
+    <table id="shopTable">
+        <tr>
+            <th>選擇</th>
+            <th>編號</th>
+            <th>店家</th>
+            <th>其他</th>
+        </tr>
+        {% for restaurant in restaurants %}
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>{{ restaurant.rID }}</td>
+            <td>{{ restaurant.name }}</td>
+            <td><a href="/shop/{{ restaurant.rID }}">查看詳情</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br><br><br>
+    <center>
+        <!-- 修改此處，調用 getCheckedShops 函式 -->
+        <button onclick="getCheckedShops()">查看店家菜品</button>
+    </center>
+</body>
+</html>

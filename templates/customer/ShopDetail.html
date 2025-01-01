@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ Shop.name }} 詳細資訊</title>
+</head>
+
+<body>
+    <h1>{{ Shop.name }}</h1>
+    <p>店家編號: {{ Shop.rID }}</p>  <!-- 這裡要改為 rID -->
+    <p>店家全名: {{ Shop.name }}</p>
+    <p>電子信箱: {{ Shop.email }}</p> 
+    <p>聯絡電話: {{ Shop.phone }}</p> 
+    <p>店面地址: {{ Shop.address }}</p>  <!-- 假設有 address 欄位 --> 
+    <p>銀行照號: {{ Shop.bank }}</p> 
+    <p>今日狀態: 
+        {% if Shop.is_active == 1 %}
+            <span style="color: green;">營業中</span>
+        {% else %}
+            <span style="color: red;">閉館</span>
+        {% endif %}
+    </p> 
+    <p>營業時間: {{ Shop.time }}</p> 
+
+
+    <br><br><br>
+    
+    </a>
+    <br><br><br>
+    
+    <a href="/ShopList">回到店家清單</a>
+</body>
+</html>

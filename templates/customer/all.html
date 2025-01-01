@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人歷史購買總結</title>
+</head>
+<body>
+    <h1>個人歷史購買總結</h1>
+    <p>您總共花費了: <?php echo number_format($totalSpent, 2); ?> 元</p>
+
+    <h2>訂單詳情</h2>
+    <?php
+    // 查詢訂單詳情
+    $query = "SELECT oID, totalPrice, createdAt, note, address FROM `order` WHERE cID = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$cID]);
+    
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        echo "<div>";
+        echo "<p>訂單編號: " . $row['oID'] . "</p>";
+        echo "<p>訂單金額: " . number_format($row['totalPrice'], 2) . " 元</p>";
+        echo "<p>訂單日期: " . $row['createdAt'] . "</p>";
+        echo "<p>備註: " . $row['note'] . "</p>";
+        echo "<p>地址: " . $row['address'] . "</p>";
+        echo "</div><hr>";
+    }
+    ?>
+</body>
+</html>

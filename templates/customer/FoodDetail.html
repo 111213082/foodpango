@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <title>{{ food.name }} 詳細資訊</title>
+</head>
+<body>
+    <h1>{{ food.name }}</h1>
+    <p>店家: {{ shop_name['name'] }}</p> <!-- 顯示店家名稱 -->
+    <p>編號: {{ food.fID }}</p>
+    <p>價格: {{ food.price }}</p>
+    
+    <!-- 判斷葷素食 -->
+    <p>葷素食: 
+        {% if food.is_vegetarian == 1 %}
+            素食
+        {% else %}
+            葷食
+        {% endif %}
+    </p>
+
+    <!-- 判斷是否供應 -->
+    <p>是否還有供應: 
+        {% if food.is_available == 1 %}
+            販售中
+        {% else %}
+            已售完
+        {% endif %}
+    </p>
+
+    <p>內容: {{ food.description }}</p>
+    <br>
+    <br><br><br>
+    <button onclick="window.history.back()">回到上一頁</button>
+</body>
+</html>
