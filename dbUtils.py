@@ -1,235 +1,135 @@
-<<<<<<< HEAD
-import mysql.connector  # 使用 MySQL 進行資料庫操作
+import mysql.connector
 
 # 連接資料庫
 def get_db_connection():
-    conn = mysql.connector.connect(
+    connection = mysql.connector.connect(
         host='localhost', # 資料庫主機地址
         user='root',
         password='',  # XAMPP 的默認密碼
         database='foodpangolin'  # 資料庫名稱
     )
-    return conn
+    return connection
 
 
-
-
-
-
-#抓所有訂單
-def get_all_orders():
-    sql = """
-    SELECT o.oID, c.name AS customer_name, r.name AS restaurant_name, o.address, o.note, o.status, o.bID
-    FROM `order` o
-    JOIN customer c ON o.cID = c.cID
-    JOIN restaurant r ON o.rID = r.rID
-    ORDER BY FIELD(o.status, '待接單', '已接單'), o.createdAt
-    """
+def get_pending_orders():
+    """取得所有待接單的訂單"""
     conn = get_db_connection()
-    try:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute(sql)
-        return cursor.fetchall()  # 返回所有訂單資料
-    finally:
-        conn.close()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT oID, cID, rID, totalPrice, note, address, createdAt FROM `order` WHERE status = '待接單' AND bID IS NULL")
+    orders = cursor.fetchall()
+    conn.close()
+    return orders
 
-'''
-#接單(待--->已)
+
 def accept_order(oID, bID):
-    sql = """
-    UPDATE `order`
-    SET status = '已接單', bID = %s
-    WHERE oID = %s AND status = '待接單'
-    """
+    """更新訂單狀態為已接單，並指定外送員"""
     conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-        affected_rows = cursor.execute(sql, (bID, oID))
-        conn.commit()
-        return affected_rows > 0  # 是否成功更新
-    finally:
-        conn.close()
-
-'''
-=======
-#!/usr/local/bin/python
-# Connect to MariaDB Platform
-import mysql.connector #mariadb
-
-try:
-    #連線DB
-    conn = mysql.connector.connect(
-        user="root",
-        password="",
-        host="localhost",
-        port=3306,
-        database="foodpangolin"
-    )
-    #建立執行SQL指令用之cursor, 設定傳回dictionary型態的查詢結果 [{'欄位名':值, ...}, ...]
-    cursor=conn.cursor(dictionary=True)
-except mysql.connector.Error as e: # mariadb.Error as e:
-    print(e)
-    print("Error connecting to DB")
-    exit(1)
-
-def validate_user(email, password, role):
-    # 檢查角色是否有效，避免 SQL 注入攻擊
-    valid_roles = ['customer', 'restaurant', 'bro']
-    if role not in valid_roles:
-        return None  # 如果角色無效，返回 None
-
-    # 根據角色選擇資料表
-    table = role  # 角色名與資料表名相同
-
-    # 構造查詢語句
-    sql = f"SELECT * FROM {table} WHERE email = %s AND password = PASSWORD(%s)"
-    
-    # 假設您有一個資料庫連接 cursor
-    cursor.execute(sql, (email, password))
-    user = cursor.fetchone()
-
-    if user:
-        return {
-            'email': user['email'],
-            'role': role  # 返回角色
-        }   
-    return None
-
-#查詢是否營業
-def get_is_active(rID):
-    sql = "SELECT is_active FROM restaurant WHERE rID = %s"
-    cursor.execute(sql, (rID,))
-    result = cursor.fetchone()
-    return result['is_active'] if result else None
-
-#更新是否營業
-def update_is_active(is_active, rID):
-    sql = "UPDATE restaurant SET is_active = %s WHERE rID = %s"
-    cursor.execute(sql, (is_active, rID))
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE `order`
+        SET status = '已接單', bID = %s
+        WHERE oID = %s AND status = '待接單' AND bID IS NULL
+    """, (bID, oID))
     conn.commit()
-
-# 菜單
-def menu_food(rID):
-    sql = """
-    SELECT food.fID, food.name, food.description, food.price, food.is_vegetarian, categories.name AS category_name
-    FROM food
-    INNER JOIN categories ON food.ID = categories.ID
-    WHERE food.rID = %s
-    ORDER BY categories.name
-    """
-    param = (rID,)
-    cursor.execute(sql, param)
-    foods = cursor.fetchall()
-
-    categorized_food = {}
-    for food in foods:
-        food['is_vegetarian'] = '素' if food['is_vegetarian'] == 1 else '葷'
-        category = food['category_name']
-        if category not in categorized_food:
-            categorized_food[category] = []
-        categorized_food[category].append(food)
-
-    return categorized_food
+    conn.close()
 
 
-#類別
-def get_categories_by_restaurant(rID):
-    sql = "SELECT ID, name FROM categories WHERE rID = %s"
-    param = (rID,)
-    cursor.execute(sql, param)
-    categories = cursor.fetchall()  # 獲取所有符合條件的資料
-    return categories
+def validate_courier(email, password):
+    """驗證外送員的帳號與密碼"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT bID FROM bro WHERE email = %s AND password = %s", (email, password))
+    courier = cursor.fetchone()
+    conn.close()
+    return courier
 
-#新增餐點
-def add(rID, name, description, price, category_id, is_vegetarian):
-    sql = """
-        INSERT INTO food (rID, name, description, price, ID, is_vegetarian)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """
-    param = (rID, name, description, price, category_id, is_vegetarian)
-    cursor.execute(sql, param)
+
+def get_orders_by_status(bID, status):
+    """根據外送員 ID 和訂單狀態取得訂單"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT oID, address, totalPrice, note, deliveryTime FROM `order`
+        WHERE status = %s AND bID = %s
+    """, (status, bID))
+    orders = cursor.fetchall()
+    conn.close()
+    return orders
+
+
+def update_order_status_and_time_in_db(oID, bID, status, delivery_time):
+    """更新訂單狀態並設置送達時間"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE `order`
+        SET status = %s, deliveryTime = %s
+        WHERE oID = %s AND bID = %s
+    """, (status, delivery_time, oID, bID))
     conn.commit()
+    conn.close()
 
 
-#修改餐點
-def edit_food(fID, name, description, price, category_id, is_vegetarian):
-    sql = """
-    UPDATE food 
-    SET name = %s, description = %s, price = %s, ID = %s, is_vegetarian = %s
-    WHERE fID = %s
-    """
-    param = (name, description, price, category_id, is_vegetarian, fID)
-    cursor.execute(sql, param)
+
+def update_order_status_in_db(oID, bID, status):
+    """更新訂單狀態"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE `order`
+        SET status = %s
+        WHERE oID = %s AND bID = %s
+    """, (status, oID, bID))
     conn.commit()
+    conn.close()
 
-#刪除餐點
-def delete_food(fID):
-    sql = "DELETE FROM food WHERE fID = %s"
-    param = (fID,)
-    cursor.execute(sql, param)
-    conn.commit()
 
-#獲得餐點資料
-def get_food(fID):
-    sql = "SELECT fID, name, description, price, ID,is_vegetarian  FROM food WHERE fID = %s"
-    param = (fID,)
-    cursor.execute(sql, param)
-    return cursor.fetchone() 
-
-#訂單列表
-def orderList(rID):
-    sql = """
-    SELECT 
-        `order`.oID,
-        `order`.cID,
-        `order`.totalPrice,
-        `order`.note,
-        GROUP_CONCAT(CONCAT(food.name, ' * ', detail.quantity) SEPARATOR ', ') AS food_list
-    FROM `order`
-    INNER JOIN detail ON `order`.oID = detail.oID
-    INNER JOIN food ON detail.fID = food.fID
-    WHERE `order`.rID = %s
-    GROUP BY `order`.oID, `order`.cID, `order`.totalPrice, `order`.note;
+def get_ratings_for_courier(bID, star_filter=None):
+    """取得外送員的評價列表，根據星級篩選"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+        SELECT s.sID, s.oID, s.rateB, s.commentB
+        FROM star AS s
+        JOIN `order` AS o ON s.oID = o.oID
+        WHERE o.bID = %s
     """
-    cursor.execute(sql, (rID,))
-    return cursor.fetchall()
+    params = [bID]
+    if star_filter:
+        query += " AND s.rateB = %s"
+        params.append(star_filter)
 
-#確認接單
-def acceptFood(prepareTime,oID):
-    sql = "UPDATE `order` SET status = '已接單', prepareTime = %s WHERE oID = %s"
-    param = (prepareTime,oID)
-    cursor.execute(sql, param)
-    conn.commit()
+    cursor.execute(query, tuple(params))
+    ratings = cursor.fetchall()
+    conn.close()
+    return ratings
 
-#我的資料
-def about_me(rID):
-    sql = "SELECT name,email,phone,address,bank,time FROM restaurant WHERE rID = %s"
-    param = (rID,)
-    cursor.execute(sql, param)
-    return cursor.fetchone() 
 
-#修改我的資料
-def edit_me(name,email,phone,address,bank,time,rID):
-    sql = """
-    UPDATE restaurant 
-    SET name = %s, email = %s, phone = %s, address = %s, bank = %s, time = %s
-    WHERE rID = %s
-    """
-    param = (name,email,phone,address,bank,time,rID)
-    cursor.execute(sql, param)
-    conn.commit()
+def get_average_rating(bID):
+    """計算外送員評價的平均分數"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT AVG(rateB) AS avg_rating
+        FROM star AS s
+        JOIN `order` AS o ON s.oID = o.oID
+        WHERE o.bID = %s
+    """, (bID,))
+    avg_rating = cursor.fetchone()['avg_rating']
+    conn.close()
+    return avg_rating
 
-#我的評價
-def star(rID):
-    sql = """
-    SELECT sID, rateR, commentR
-    FROM star 
-    INNER JOIN `order` ON `order`.oID = star.oID
-    WHERE `order`.rID = %s
-    """
-    param = (rID,)
-    cursor.execute(sql, param)
-    return cursor.fetchall()
 
- 
->>>>>>> d3f1586 (商家)
+def get_order_details(oID):
+    """取得指定訂單的詳細資訊"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT o.oID, o.totalPrice, o.address, o.note, o.createdAt
+        FROM `order` AS o
+        WHERE o.oID = %s
+    """, (oID,))
+    order = cursor.fetchone()
+    conn.close()
+    return order
+

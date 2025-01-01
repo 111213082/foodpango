@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的評價</title>
+    <title>訂單詳情與評價</title>
     <style>
-        /* Reset */ ㄖ  
+        /* Reset */
         * {
             margin: 0;
             padding: 0;
@@ -31,34 +31,64 @@
             text-align: center;
         }
 
-        /* Link button styles */
+        h2 {
+            font-size: 1.8em;
+            margin-top: 20px;
+            text-align: center;
+            color: #555;
+        }
+
+        /* Button container */
+        .button-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         a.button {
-            background-color: #124e8e;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 1em;
             display: inline-block;
-            margin-top: 10px;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
 
         a.button:hover {
             background-color: #0056b3;
         }
 
-        /* Auction items */
-        h2 {
-            font-size: 2em;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        ul {
-            list-style: none;
+        /* Order details */
+        .order-details {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .order-details p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        /* Rating list */
+        ul {
+            list-style: none;
             padding: 0;
+            width: 100%;
+            max-width: 600px;
         }
 
         ul li {
@@ -67,43 +97,34 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        ul li strong {
-            font-size: 1.1em;
-            color: #333;
+        ul li p {
+            margin: 0 0 10px 0;
         }
 
-        ul li a {
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-
-        ul li a:hover {
-            color: #0056b3;
-        }
-
-        /* Logout button */
-        form {
-            margin-top: 20px;
-        }
-
-        form button {
-            background-color: #dc3545;
+        ul li form button {
+            background-color: #f2c111;
             color: #fff;
             border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
+            padding: 8px 12px;
             border-radius: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
         }
 
-        form button:hover {
-            background-color: #c82333;
+        ul li form button:hover {
+            background-color: #e2de0c;
+        }
+
+        /* Star filter */
+        #star_filter_form {
+            margin-bottom: 20px;
+        }
+
+        #star_filter {
+            padding: 5px;
+            font-size: 1em;
         }
     </style>
 </head>

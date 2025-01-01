@@ -5,116 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>訂單詳情</title>
     <style>
-        /* Reset */ ㄖ  
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        /* Body */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        /* Header */
-        h1 {
-            color: #333;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        /* Link button styles */
-        a.button {
-            background-color: #124e8e;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 1em;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        a.button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Auction items */
-        h2 {
-            font-size: 2em;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        ul {
-            list-style: none;
-            width: 100%;
-            max-width: 600px;
+            margin: 0;
             padding: 0;
         }
-
-        ul li {
-            background: #fff;
-            margin: 10px 0;
-            padding: 15px;
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 30px;
+        }
+        .order-details {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
-
-        ul li strong {
-            font-size: 1.1em;
-            color: #333;
+        .order-details p {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #555;
         }
-
-        ul li a {
+        .order-details a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007BFF;
             text-decoration: none;
-            color: #007bff;
             font-weight: bold;
         }
-
-        ul li a:hover {
-            color: #0056b3;
+        .order-details a:hover {
+            text-decoration: underline;
         }
-
-        /* Logout button */
-        form {
+        .order-summary {
             margin-top: 20px;
-        }
-
-        form button {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        form button:hover {
-            background-color: #c82333;
         }
     </style>
 </head>
 <body>
     <h1>訂單詳情</h1>
-    <p>訂單編號：{{ order['oID'] }}</p>
-    <p>總金額：${{ order['totalPrice'] }}</p>
-    <p>地址：{{ order['address'] }}</p>
-    <p>備註：{{ order['note'] }}</p>
-    <p>建立時間：{{ order['createdAt'] }}</p>
-
-    <a href="{{ url_for('ratings') }}">返回評價列表</a>
+    <div class="order-details">
+        <p>訂單編號：{{ order['oID'] }}</p>
+        <p>總金額：${{ order['totalPrice'] }}</p>
+        <p>地址：{{ order['address'] }}</p>
+        <p>備註：{{ order['note'] }}</p>
+        <p>建立時間：{{ order['createdAt'] }}</p>
+    </div>
+    <a href="{{ url_for('ratings') }}" class="button">返回評價列表</a>
 </body>
 </html>
