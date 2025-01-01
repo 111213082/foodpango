@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-12-27 06:14:56
+-- 產生時間： 2025-01-01 06:11:30
 -- 伺服器版本： 10.4.28-MariaDB
 -- PHP 版本： 8.2.4
 
@@ -116,7 +116,41 @@ CREATE TABLE `detail` (
 
 INSERT INTO `detail` (`dID`, `oID`, `fID`, `quantity`, `price`) VALUES
 (2, 1, 1, 1, 380),
-(3, 1, 2, 1, 250);
+(3, 1, 2, 1, 250),
+(5, 6, 1, 1, 380),
+(6, 7, 1, 1, 380),
+(7, 8, 1, 1, 380),
+(8, 9, 1, 1, 380),
+(9, 10, 1, 1, 380),
+(10, 11, 1, 2, 250),
+(11, 12, 1, 2, 250),
+(12, 13, 1, 2, 250),
+(13, 14, 1, 2, 250),
+(14, 15, 1, 2, 250),
+(15, 16, 19, 2, 200),
+(16, 17, 19, 2, 200),
+(17, 18, 19, 2, 200),
+(18, 19, 19, 2, 200),
+(19, 20, 19, 2, 200),
+(20, 21, 3, 1, 300),
+(21, 22, 3, 1, 300),
+(22, 23, 3, 1, 300),
+(23, 24, 9, 1, 300),
+(24, 25, 9, 1, 300),
+(25, 26, 17, 1, 90),
+(26, 27, 18, 1, 90),
+(27, 28, 17, 1, 90),
+(28, 29, 18, 1, 90),
+(29, 30, 17, 1, 90),
+(30, 31, 13, 1, 80),
+(31, 32, 16, 1, 80),
+(32, 33, 13, 1, 80),
+(33, 34, 13, 1, 80),
+(34, 35, 16, 1, 80),
+(35, 36, 16, 1, 80),
+(36, 37, 13, 1, 80),
+(37, 38, 13, 1, 80),
+(38, 39, 16, 1, 80);
 
 -- --------------------------------------------------------
 
@@ -177,14 +211,14 @@ CREATE TABLE `order` (
   `oID` int(11) NOT NULL,
   `cID` int(11) NOT NULL,
   `rID` int(11) NOT NULL,
-  `bID` int(11) NOT NULL,
-  `status` enum('待確認','已接單','配送中','完成') DEFAULT '待確認',
-  `totalPrice` int(10) NOT NULL,
+  `bID` int(11) DEFAULT NULL,
+  `status` enum('待確認','店家已接單','小哥已接單','配送中','已送達','訂單完成') DEFAULT '待確認',
+  `totalPrice` int(10) DEFAULT NULL,
   `note` text DEFAULT NULL,
   `address` text NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `prepareTime` int(11) NOT NULL,
-  `deliverTime` int(11) NOT NULL
+  `prepareTime` int(11) DEFAULT NULL,
+  `deliverTime` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -192,7 +226,41 @@ CREATE TABLE `order` (
 --
 
 INSERT INTO `order` (`oID`, `cID`, `rID`, `bID`, `status`, `totalPrice`, `note`, `address`, `createdAt`, `prepareTime`, `deliverTime`) VALUES
-(1, 1, 2, 1, '待確認', 630, NULL, '大草原', '2024-12-27 04:39:21', 20, 20);
+(1, 1, 2, 1, '訂單完成', 630, NULL, '大草原', '2024-12-31 06:37:59', 20, 20),
+(6, 1, 1, 2, '訂單完成', 380, '請快送', '台北市信義區XX路XX號', '2024-12-31 06:37:25', 20, 20),
+(7, 2, 1, 2, '訂單完成', 380, '多點醬', '新北市板橋區XX路XX號', '2024-12-31 06:37:25', 20, 20),
+(8, 1, 1, 1, '訂單完成', 380, '請不要放辣', '桃園市中壢區XX路XX號', '2024-12-31 06:37:25', 20, 20),
+(9, 2, 1, 1, '訂單完成', 380, NULL, '台中市西屯區XX路XX號', '2024-12-31 06:37:25', 20, 20),
+(10, 1, 1, 2, '訂單完成', 380, '請快送', '台北市信義區XX路XX號', '2024-12-31 06:37:25', 20, 20),
+(11, 1, 1, 2, '訂單完成', 250, '請快送', '台北市信義區XX路XX號', '2024-12-31 18:25:10', 20, 20),
+(12, 2, 1, 2, '訂單完成', 250, '多點醬', '新竹市東區XX路XX號', '2024-12-31 18:25:10', 20, 20),
+(13, 1, 1, 1, '訂單完成', 250, '請不要放辣', '新北市永和區XX路XX號', '2024-12-31 18:25:10', 20, 20),
+(14, 2, 1, 1, '訂單完成', 250, NULL, '台中市西屯區XX路XX號', '2024-12-31 18:25:10', 20, 20),
+(15, 1, 1, 2, '訂單完成', 250, '請快送', '台北市內湖區XX路XX號', '2024-12-31 18:25:10', 20, 20),
+(16, 1, 2, 2, '訂單完成', 200, '請快送', '台北市信義區XX路XX號', '2024-12-31 18:38:47', 20, 20),
+(17, 2, 2, 2, '訂單完成', 200, NULL, '新北市板橋區XX路XX號', '2024-12-31 18:38:47', 20, 20),
+(18, 1, 2, 1, '訂單完成', 200, NULL, '新竹市香山區XX路XX號', '2024-12-31 18:38:47', 20, 20),
+(19, 2, 2, 1, '訂單完成', 200, NULL, '台中市南屯區XX路XX號', '2024-12-31 18:38:47', 20, 20),
+(20, 1, 2, 2, '訂單完成', 200, '請快送', '高雄市左營區XX路XX號', '2024-12-31 18:38:47', 20, 20),
+(21, 1, 1, NULL, '待確認', 300, '請快送', '台北市信義區XX路XX號', '2024-12-31 18:55:55', NULL, NULL),
+(22, 2, 1, NULL, '待確認', 300, '多點醬', '新北市板橋區XX路XX號', '2024-12-31 18:55:55', NULL, NULL),
+(23, 1, 1, NULL, '待確認', 300, '請不要放辣', '桃園市中壢區XX路XX號', '2024-12-31 18:55:55', NULL, NULL),
+(24, 2, 1, NULL, '待確認', 300, NULL, '台中市西屯區XX路XX號', '2025-01-01 04:47:06', 20, 20),
+(25, 2, 1, NULL, '待確認', 300, '請快送', '台北市信義區XX路XX號', '2024-12-31 18:55:55', NULL, NULL),
+(26, 1, 2, NULL, '待確認', 90, '請快送', '台北市信義區XX路XX號', '2025-01-01 04:57:42', NULL, NULL),
+(27, 2, 2, NULL, '待確認', 90, NULL, '新北市板橋區XX路XX號', '2025-01-01 04:57:42', NULL, NULL),
+(28, 1, 2, NULL, '待確認', 90, NULL, '桃園市中壢區XX路XX號', '2025-01-01 04:57:42', NULL, NULL),
+(29, 2, 2, 1, '小哥已接單', 90, NULL, '桃園市楊梅區XX路XX號', '2025-01-01 04:57:42', NULL, NULL),
+(30, 2, 2, 2, '小哥已接單', 90, '請快送', '新竹市東區XX路XX號', '2025-01-01 04:57:42', NULL, NULL),
+(31, 1, 1, 2, '小哥已接單', 80, '請快送', '台北市信義區XX路XX號', '2025-01-01 05:08:17', 20, NULL),
+(32, 2, 2, 1, '小哥已接單', 80, '請注意不要弄翻', '新北市板橋區XX路XX號', '2025-01-01 05:08:17', 20, NULL),
+(33, 1, 1, 1, '配送中', 80, '請注意不要弄翻', '桃園市中壢區XX路XX號', '2025-01-01 05:08:17', 20, 20),
+(34, 2, 1, 2, '配送中', 80, NULL, '台中市西屯區XX路XX號', '2025-01-01 05:08:17', 20, 20),
+(35, 2, 2, 2, '配送中', 80, '請注意不要弄翻', '台中市西屯區XX路XX號', '2025-01-01 05:08:17', 20, 20),
+(36, 1, 2, 1, '配送中', 80, NULL, '台中市西屯區XX路XX號', '2025-01-01 05:08:17', 20, 20),
+(37, 2, 1, NULL, '店家已接單', 80, NULL, '桃園市龜山區XX路XX號', '2025-01-01 05:08:17', 20, NULL),
+(38, 1, 1, NULL, '店家已接單', 80, NULL, '台北市內湖區XX路XX號', '2025-01-01 05:08:17', 20, NULL),
+(39, 2, 2, NULL, '店家已接單', 80, '請快送', '台北市信義區XX路XX號', '2025-01-01 05:08:17', 20, NULL);
 
 -- --------------------------------------------------------
 
@@ -240,7 +308,22 @@ CREATE TABLE `star` (
 --
 
 INSERT INTO `star` (`sID`, `oID`, `rateR`, `rateB`, `commentR`, `commentB`) VALUES
-(1, 1, 5, 5, '好吃', '好快');
+(1, 1, 5, 5, '好吃', '好快'),
+(3, 6, 5, 4, '餐點好吃', '外送員快且準時'),
+(4, 7, 4, 3, '不錯，但有些味道偏淡', '外送員有點不耐煩'),
+(5, 8, 5, 5, NULL, NULL),
+(6, 9, 2, 4, '還行，沒什麼特別的', '外送員服務不錯，送餐時間稍慢'),
+(7, 10, 5, 5, '非常喜歡！', NULL),
+(8, 11, 5, 4, '餐點好吃', '外送員快且準時'),
+(9, 12, 4, 3, '不錯，但有些味道偏淡', '外送員有點不耐煩'),
+(10, 13, 5, 5, NULL, NULL),
+(11, 14, 2, 2, '味道不符合預期', '外送員有點不耐煩'),
+(12, 15, 5, 5, '非常喜歡！', '外送員超級快'),
+(19, 16, 5, 4, '好吃', '快'),
+(20, 17, 3, 2, '味道偏淡', '外送員不耐煩'),
+(21, 18, 1, 1, NULL, NULL),
+(22, 19, 3, 1, '還行，沒什麼特別的', '超慢，都融化了'),
+(23, 20, 5, 5, '喜歡，會推薦給朋友', NULL);
 
 --
 -- 已傾印資料表的索引
@@ -314,7 +397,7 @@ ALTER TABLE `star`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `bro`
 --
 ALTER TABLE `bro`
-  MODIFY `bID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `bID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `categories`
@@ -326,13 +409,13 @@ ALTER TABLE `categories`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `cID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `cID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `detail`
 --
 ALTER TABLE `detail`
-  MODIFY `dID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `dID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `food`
@@ -344,19 +427,19 @@ ALTER TABLE `food`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order`
 --
 ALTER TABLE `order`
-  MODIFY `oID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `oID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `restaurant`
 --
 ALTER TABLE `restaurant`
-  MODIFY `rID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `rID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `star`
 --
 ALTER TABLE `star`
-  MODIFY `sID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `sID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- 已傾印資料表的限制式
