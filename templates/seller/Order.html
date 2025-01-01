@@ -1,9 +1,13 @@
-<html><head>
-<meta charset="utf-8">
-<title>訂單管理</title></head>
-<h2>訂單管理</h2>
-{% include 'seller/base.html' %}
-<h3>待接單</h3>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>訂單管理</title>
+</head>
+<body>
+    <h2>訂單管理</h2>
+    {% include 'seller/base.html' %}
+
+    <h3>待接單</h3>
     <table>
         <tr>
             <th>顧客ID</th>
@@ -12,7 +16,7 @@
             <th>總金額</th>
             <th>操作</th>
         </tr>
-        {% for rec in order_list %}
+        {% for rec in pending_orders %}
         <tr>
             <td>{{ rec.cID }}</td>
             <td>{{ rec.food_list }}</td>
@@ -38,9 +42,9 @@
         {% for rec in accepted_orders %}
         <tr>
             <td>{{ rec.cID }}</td>
-            <td>{{ rec.food }}</td>
+            <td>{{ rec.food_list }}</td>
             <td>{{ rec.description }}</td>
-            <td>{{ rec.price }}</td>
+            <td>{{ rec.totalPrice }}</td>
         </tr>
         {% endfor %}
     </table>
