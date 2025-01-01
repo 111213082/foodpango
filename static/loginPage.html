@@ -19,7 +19,7 @@
         /* Center the login form container */
         .login-container {
             background-color: #ffffff;
-            padding: 20px 40px;
+            padding: 20px 80px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
@@ -59,30 +59,51 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 15px;
         }
 
         /* Button hover effect */
         button:hover {
             background-color: #6b705c;
         }
+        /* 按鈕樣式 */
+        .back-button {
+            background-color: #ccc;
+            color: #333;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #bbb;
+        }
+        .role-options {
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 
 <body>
     <div class="login-container">
-        <h2>Login</h2><hr><br>
+        <h2>登入</h2><hr><br>
         <form action="/login" method="POST">
             <label for="EMAIL">email:</label>
             <input type="email" name="EMAIL" required>
             <label for="PWD">password:</label>
             <input type="password" name="PWD" required>
-            角色：
+            
+            <div class="role-options">
             <label><input type="radio" name="role" value="customer"required> 顧客</label>
             <label><input type="radio" name="role" value="restaurant"> 餐廳</label>
             <label><input type="radio" name="role" value="bro"> 外送員</label>
-            <br>
-            <button type="submit">Login</button>
+            </div><br>
+            <button type="submit">登入</button> | <a href="/index.html"><button type="button" class="back-button">返回</button></a>
         </form>
+        
     </div>
 </body>
 </html>

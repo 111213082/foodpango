@@ -38,5 +38,33 @@ def validate_user(email, password, role):
         }   
     return None
 
+def register_user(role, **kwargs):
+    try:
+        if role == 'customer':
+            sql = """
+                INSERT INTO customer (name, email, password, phone, address, card)
+                VALUES (%s, %s, PASSWORD(%s), %s, %s, %s)
+            """
+            params = (kwargs['name'], kwargs['email'], kwargs['password'], kwargs['phone'], kwargs.get('address'), kwargs.get('card'))
+        elif role == 'restaurant':
+            sql = """
+                INSERT INTO restaurant (name, email, password, phone, address, bank)
+                VALUES (%s, %s, PASSWORD(%s), %s, %s, %s)
+            """
+            params = (kwargs['name'], kwargs['email'], kwargs['password'], kwargs['phone'], kwargs['address'], kwargs['bank'])
+        elif role == 'bro':
+            sql = """
+                INSERT INTO bro (name, email, password, phone, bank)
+                VALUES (%s, %s, PASSWORD(%s), %s, %s)
+            """
+            params = (kwargs['name'], kwargs['email'], kwargs['password'], kwargs['phone'], kwargs['bank'])
+        else:
+            raise ValueError("Invalid role specified")
 
+        cursor.execute(sql, params)
+        conn.commit()
+        return True
+    except mysql.connector.Error as e:
+        print(f"Database Error: {e}")
+        return False
 
