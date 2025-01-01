@@ -102,7 +102,7 @@ def update_order_status_with_time(oID):
         return "送達時間未提供", 400  # 如果沒有提供送達時間，返回錯誤
 
     # 更新訂單狀態並添加送達時間
-    update_order_status_and_time_in_db(oID, bID, '已送達', delivery_time)
+    update_order_status_and_time_in_db(oID, bID, '已取餐', delivery_time)
 
     return redirect(url_for('orders_status'))
 
