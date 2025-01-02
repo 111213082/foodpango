@@ -115,12 +115,13 @@ def get_orders_by_status(rID, status):
     WHERE `order`.rID = %s AND `order`.status = %s
     GROUP BY `order`.oID, `order`.cID, `order`.totalPrice, `order`.note
     """
-    cursor.execute(sql, (rID, status))
+    param = ((rID, status))
+    cursor.execute(sql, param)
     return cursor.fetchall()
 
 #確認接單
 def acceptFood(oID, prepareTime):
-    sql = "UPDATE `order` SET status = '已接單', prepareTime = %s WHERE oID = %s"
+    sql = "UPDATE `order` SET status = '店家已接單', prepareTime = %s WHERE oID = %s"
     param = (prepareTime, oID)
     cursor.execute(sql, param)
     conn.commit()

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 import mysql.connector
 from functools import wraps
-from dbUtils import get_is_active,update_is_active,menu_food,add,get_categories_by_restaurant,edit_food,delete_food,get_food,get_orders_by_status,about_me,edit_me,star,orderList,acceptFood
+from dbUtils import get_is_active,update_is_active,menu_food,add,get_categories_by_restaurant,edit_food,delete_food,get_food,get_orders_by_status,about_me,edit_me,star,acceptFood
 #from dbUtils import validate_user#, register_customer,register_restaurant,register_bro
 import json
 
