@@ -1,4 +1,5 @@
 import dbUtils
+from datetime import datetime
 from flask import Flask, render_template, request, session, redirect, jsonify, url_for
 from functools import wraps
 from dbUtils import get_restaurants, get_restaurant_by_id, get_foods, get_food_by_id, get_foods_by_shop_ids, insert_order_item
@@ -277,20 +278,40 @@ def get_order_status_api(oID):
     print(f"訂單 {oID} 狀態: {status}")  # 確認後端回應的狀態
     return jsonify({'status': status})  # 返回訂單的狀態
 
+@app.route('/get_session_cid')
+def get_session_cid():
+    cID = session.get('cID')
+    if cID:
+        return jsonify({'cID': cID})
+    else:
+        return jsonify({'cID': None}), 401  # 如果沒有登入，返回 401 錯誤
 
-@app.route('/order_summary/<int:cID>') 
+
+
+
+@app.route('/order_summary/<int:cID>')
 def order_summary(cID):
-    # 查詢顧客的訂單資料
-    query = "SELECT oID, cID, rID, totalPrice, note, address, createdAt FROM `order` WHERE cID = %s"
+    query = "SELECT oID, cID, rID, totalPrice, note, address,createdAt FROM `order` WHERE cID = %s"
     orders = get_orders_by_customer(query, (cID,))
-    
-    # 如果沒有訂單資料，返回 404
+
+    # 印出 orders，確保資料已經抓取成功
+    print(f"Orders fetched: {orders}")
+
     if not orders:
-        return jsonify({"message": "目前沒有任何訂單資料。"}), 404
-    
-    # 計算總金額
-    total_amount = sum(float(order['totalPrice']) for order in orders)
-    
-    # 返回 JSON 格式資料
-    return jsonify(orders=orders, total_amount=total_amount)
+        return render_template('all.html', orders=[], total_amount=0)
+
+    # 計算總金額並轉換 totalPrice 為 float
+    total_amount = 0
+    for order in orders:
+        try:
+            order['totalPrice'] = float(order['totalPrice'])  # 將 totalPrice 轉換為浮動數
+            total_amount += order['totalPrice']
+        except (ValueError, TypeError):
+            continue  # 如果有錯誤，跳過該筆訂單
+
+    # 印出處理後的 orders，確保資料是正確的
+    print(f"Orders passed to template: {orders}")
+
+    # 傳遞訂單資料到模板
+    return render_template('all.html', orders=orders, total_amount=total_amount)
 

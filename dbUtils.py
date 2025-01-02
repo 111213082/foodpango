@@ -377,26 +377,24 @@ def insert_review(oID, rateR, rateB, commentR, commentB):
 
 
 def get_orders_by_customer(query, params):
-    cursor = None
     try:
-        connection = db_connection()
-        cursor = connection.cursor()
-        print(f"Executing query: {query} with params: {params}")  # 打印執行的 SQL 查詢
+        cursor = conn.cursor(dictionary=True)
+        print(f"Executing query: {query} with params: {params}")  # 確認查詢語句和參數
         cursor.execute(query, params)
         
         orders = cursor.fetchall()
-        print(f"Orders fetched: {orders}")  # 打印查詢結果
-        
-        columns = [desc[0] for desc in cursor.description]
-        orders = [dict(zip(columns, order)) for order in orders]
+        print(f"Fetched orders from DB: {orders}")  # 查看從資料庫中返回的資料
         
         return orders
     except Exception as e:
         print(f"Error executing query: {e}")
         return None
     finally:
-        if cursor:
-            cursor.close()
+        cursor.close()
+
+
+
+
 
 
 
@@ -440,22 +438,10 @@ def check_order_status(oID):
         return None
 
 # 用測試的訂單編號來查詢
-oID = 54
+oID = 55
 status = check_order_status(oID)
 
 if status:
     print(f"訂單 {oID} 的狀態是: {status}")
 else:
     print(f"訂單 {oID} 未找到")
-
-
-
-
-
-
-
-
-
-
-
-
