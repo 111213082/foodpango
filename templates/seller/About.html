@@ -1,0 +1,21 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>我的資料</title>
+</head>
+<body>
+<h2>我的資料</h2>
+{% include 'seller/base.html' %}
+<div class="restaurant-info">
+    <p><strong>餐廳名稱:</strong> {{ about['name'] }}</p>
+    <p><strong>電子郵件:</strong> {{ about['email'] }}</p>
+    <p><strong>聯絡電話:</strong> {{ about['phone'] }}</p>
+    <p><strong>地址:</strong> {{ about['address'] }}</p>
+    <p><strong>銀行帳號:</strong> {{ about['bank'] }}</p>
+    <p><strong>營業時間:</strong> {{ about['time'] }}</p>
+</div>
+<div class="action-buttons">
+    <a href="{{ url_for('editME', rID=rID) }}" class="btn btn-edit"><button>修改</button></a>
+</div>
+</body>
+</html>

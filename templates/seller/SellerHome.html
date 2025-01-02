@@ -1,0 +1,37 @@
+<html><head>
+<meta charset="utf-8">
+<title>{{ session['rName'] }}</title></head>
+<h1>Welcome to {{ session['rName'] }}</h1>
+{% include 'seller/base.html' %}
+<form method="POST" action="{{ url_for('update_active', rID=rID) }}">
+    <p>是否營業</p>
+    <label>
+        <input type="radio" name="active" value="1" {% if isActive %}checked{% endif %}/> 開始營業
+    </label>
+    <label>
+        <input type="radio" name="active" value="0" {% if not isActive %}checked{% endif %}/> 結束營業
+    </label>
+    <button type="submit">確認</button>
+</form>
+{% for category, items in categorized_food.items() %}
+<h3>{{ category }}</h3>
+<table>
+    <tr>
+        <th>餐點名稱</th>
+        <th>商品描述</th>
+        <th>價格</th>
+        <th>是否為素食</th>
+    </tr>
+    {% for rec in items %}
+    <tr>
+        <td>{{ rec.name }}</td>
+        <td>{{ rec.description }}</td>
+        <td>{{ rec.price }}</td>
+        <td>{{ rec.is_vegetarian }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+</table>
+<a href="">登出</a>
+</body></html>

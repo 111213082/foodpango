@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
+<<<<<<< HEAD
 -- 產生時間： 2025-01-01 06:11:30
+=======
+-- 產生時間： 2024-12-27 06:14:56
+>>>>>>> origin/newseller
 -- 伺服器版本： 10.4.28-MariaDB
 -- PHP 版本： 8.2.4
 
@@ -116,6 +120,7 @@ CREATE TABLE `detail` (
 
 INSERT INTO `detail` (`dID`, `oID`, `fID`, `quantity`, `price`) VALUES
 (2, 1, 1, 1, 380),
+<<<<<<< HEAD
 (3, 1, 2, 1, 250),
 (5, 6, 1, 1, 380),
 (6, 7, 1, 1, 380),
@@ -151,6 +156,9 @@ INSERT INTO `detail` (`dID`, `oID`, `fID`, `quantity`, `price`) VALUES
 (36, 37, 13, 1, 80),
 (37, 38, 13, 1, 80),
 (38, 39, 16, 1, 80);
+=======
+(3, 1, 2, 1, 250);
+>>>>>>> origin/newseller
 
 -- --------------------------------------------------------
 
@@ -211,6 +219,7 @@ CREATE TABLE `order` (
   `oID` int(11) NOT NULL,
   `cID` int(11) NOT NULL,
   `rID` int(11) NOT NULL,
+<<<<<<< HEAD
   `bID` int(11) DEFAULT NULL,
   `status` enum('待確認','店家已接單','小哥已接單','配送中','已送達','訂單完成') DEFAULT '待確認',
   `totalPrice` int(10) DEFAULT NULL,
@@ -219,6 +228,16 @@ CREATE TABLE `order` (
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `prepareTime` int(11) DEFAULT NULL,
   `deliverTime` int(11) DEFAULT NULL
+=======
+  `bID` int(11) NOT NULL,
+  `status` enum('待確認','已接單','配送中','完成') DEFAULT '待確認',
+  `totalPrice` int(10) NOT NULL,
+  `note` text DEFAULT NULL,
+  `address` text NOT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `prepareTime` int(11) NOT NULL,
+  `deliverTime` int(11) NOT NULL
+>>>>>>> origin/newseller
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -226,6 +245,7 @@ CREATE TABLE `order` (
 --
 
 INSERT INTO `order` (`oID`, `cID`, `rID`, `bID`, `status`, `totalPrice`, `note`, `address`, `createdAt`, `prepareTime`, `deliverTime`) VALUES
+<<<<<<< HEAD
 (1, 1, 2, 1, '訂單完成', 630, NULL, '大草原', '2024-12-31 06:37:59', 20, 20),
 (6, 1, 1, 2, '訂單完成', 380, '請快送', '台北市信義區XX路XX號', '2024-12-31 06:37:25', 20, 20),
 (7, 2, 1, 2, '訂單完成', 380, '多點醬', '新北市板橋區XX路XX號', '2024-12-31 06:37:25', 20, 20),
@@ -261,6 +281,9 @@ INSERT INTO `order` (`oID`, `cID`, `rID`, `bID`, `status`, `totalPrice`, `note`,
 (37, 2, 1, NULL, '店家已接單', 80, NULL, '桃園市龜山區XX路XX號', '2025-01-01 05:08:17', 20, NULL),
 (38, 1, 1, NULL, '店家已接單', 80, NULL, '台北市內湖區XX路XX號', '2025-01-01 05:08:17', 20, NULL),
 (39, 2, 2, NULL, '店家已接單', 80, '請快送', '台北市信義區XX路XX號', '2025-01-01 05:08:17', 20, NULL);
+=======
+(1, 1, 2, 1, '待確認', 630, NULL, '大草原', '2024-12-27 04:39:21', 20, 20);
+>>>>>>> origin/newseller
 
 -- --------------------------------------------------------
 
@@ -308,6 +331,7 @@ CREATE TABLE `star` (
 --
 
 INSERT INTO `star` (`sID`, `oID`, `rateR`, `rateB`, `commentR`, `commentB`) VALUES
+<<<<<<< HEAD
 (1, 1, 5, 5, '好吃', '好快'),
 (3, 6, 5, 4, '餐點好吃', '外送員快且準時'),
 (4, 7, 4, 3, '不錯，但有些味道偏淡', '外送員有點不耐煩'),
@@ -324,6 +348,9 @@ INSERT INTO `star` (`sID`, `oID`, `rateR`, `rateB`, `commentR`, `commentB`) VALU
 (21, 18, 1, 1, NULL, NULL),
 (22, 19, 3, 1, '還行，沒什麼特別的', '超慢，都融化了'),
 (23, 20, 5, 5, '喜歡，會推薦給朋友', NULL);
+=======
+(1, 1, 5, 5, '好吃', '好快');
+>>>>>>> origin/newseller
 
 --
 -- 已傾印資料表的索引
@@ -397,7 +424,11 @@ ALTER TABLE `star`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `bro`
 --
 ALTER TABLE `bro`
+<<<<<<< HEAD
   MODIFY `bID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+=======
+  MODIFY `bID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+>>>>>>> origin/newseller
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `categories`
@@ -409,13 +440,21 @@ ALTER TABLE `categories`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `customer`
 --
 ALTER TABLE `customer`
+<<<<<<< HEAD
   MODIFY `cID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+=======
+  MODIFY `cID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+>>>>>>> origin/newseller
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `detail`
 --
 ALTER TABLE `detail`
+<<<<<<< HEAD
   MODIFY `dID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+=======
+  MODIFY `dID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+>>>>>>> origin/newseller
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `food`
@@ -427,19 +466,31 @@ ALTER TABLE `food`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order`
 --
 ALTER TABLE `order`
+<<<<<<< HEAD
   MODIFY `oID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+=======
+  MODIFY `oID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+>>>>>>> origin/newseller
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `restaurant`
 --
 ALTER TABLE `restaurant`
+<<<<<<< HEAD
   MODIFY `rID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+=======
+  MODIFY `rID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+>>>>>>> origin/newseller
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `star`
 --
 ALTER TABLE `star`
+<<<<<<< HEAD
   MODIFY `sID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+=======
+  MODIFY `sID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+>>>>>>> origin/newseller
 
 --
 -- 已傾印資料表的限制式

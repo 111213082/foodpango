@@ -127,11 +127,15 @@ def bro_dashboard():
 @app.route('/restaurant/dashboard')
 @app.route("/rHome/<int:rID>")
 @login_required(role='restaurant')
-def rHome(rID):
-    rID = session.get('rID')  
+def rHome(rID=None):
+    if rID is None:  # 如果 rID 未提供，從 Session 中獲取
+        rID = session.get('rID')
+    if not rID:  # 如果 rID 仍為 None，返回錯誤或重定向
+        return redirect('/loginPage.html')  
+
     isActive = get_is_active(rID)
     categorized_food = menu_food(rID)
-    return render_template('seller/SellerHome.html', categorized_food=categorized_food, rID=rID,isActive=isActive)
+    return render_template('seller/SellerHome.html', categorized_food=categorized_food, rID=rID, isActive=isActive)
 
 # 更新是否營業
 @app.route('/update_active/<int:rID>', methods=['POST'])

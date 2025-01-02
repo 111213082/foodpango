@@ -31,13 +31,21 @@ def validate_user(email, password, role):
     cursor.execute(sql, (email, password))
     user = cursor.fetchone()
 
-    if user:
-        return {
-            'id': user['id'],  # 使用者 ID
-            'email': user['email'],
-            'role': role  # 返回角色
-        }   
-    return None
+    if not user:  # 如果未找到任何資料
+        return None
+
+    # 根據角色確定 ID 欄位名稱
+    id_field = {
+        'customer': 'cID',
+        'restaurant': 'rID',
+        'bro': 'bID',
+    }.get(role, 'id')  # 預設為 'id'
+
+    return {
+        'id': user.get(id_field),  # 使用 `get` 避免 KeyError
+        'email': user.get('email'),
+        'role': role
+    }
 
 def register_user(role, **kwargs):
     try:

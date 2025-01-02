@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>菜單管理</title>
+</head>
+<body>
+<h2>菜單管理</h2>
+{% include 'seller/base.html' %}
+{% for category, items in categorized_food.items() %}
+<h3>{{ category }}</h3>
+<table>
+    <tr>
+        <th>餐點名稱</th>
+        <th>商品描述</th>
+        <th>價格</th>
+        <th>是否為素食</th>
+    </tr>
+    {% for rec in items %}
+    <tr>
+        <td>{{ rec.name }}</td>
+        <td>{{ rec.description }}</td>
+        <td>{{ rec.price }}</td>
+        <td>{{ rec.is_vegetarian }}</td>
+        <td>
+            <div class="action-buttons">
+                <a href="{{ url_for('edit', rID=rID, fID=rec.fID) }}" class="btn btn-edit"><button>修改</button></a>
+                <form action="{{ url_for('delete', rID=rID) }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="fID" value="{{ rec.fID }}">
+                    <button type="submit" class="btn btn-delete">刪除</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+
+<a href="{{ url_for('addFood', rID=rID) }}">新增餐點</a>
+</body>
+</html>

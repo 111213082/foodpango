@@ -1,0 +1,25 @@
+<html><head>
+<meta charset="utf-8">
+<title>編輯菜單</title></head>
+<h2>編輯菜單</h2>
+<form method="post" action="{{ url_for('edit', rID=rID, fID=food['fID']) }}">
+    <label>餐點名稱: <input type="text" name="name" value="{{ food['name'] }}" required></label><br>
+    <label>餐點介紹: <input type="text" name="description" value="{{ food['description'] }}"></label><br>
+    <label>餐點價格: <input type="number" name="price" value="{{ food['price'] }}" step="0.01" required></label><br>
+    <label>餐點類別: 
+        <select name="category_id" required>
+            {% for category in categories %}
+                <option value="{{ category['ID'] }}" {% if category['ID'] == food['ID'] %}selected{% endif %}>
+                    {{ category['name'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </label><br>
+    <label>是否為素食: 
+        <input type="checkbox" name="is_vegetarian" {% if food['is_vegetarian'] %}checked{% endif %}>
+    </label><br>
+    <button type="submit">提交修改</button>
+    <button><a href="/menu/{{ rID }}">取消</a></button>
+</form>
+</body></html>
+    

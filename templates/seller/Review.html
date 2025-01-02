@@ -1,0 +1,19 @@
+<html><head>
+<meta charset="utf-8">
+<title>我的評價</title></head>
+<h2>我的評價</h2>
+{% include 'seller/base.html' %}
+<table>
+    <tr>
+        <th>顧客評分</th>
+        <th>顧客評論</th>
+    </tr>
+    {% for rec in stars %}
+    <tr>
+        <td>{{rec.rateR}}</td>
+        <td>{{rec.commentR}}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body></html>
+        
