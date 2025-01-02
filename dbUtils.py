@@ -37,22 +37,18 @@ def login_required(role=None):  # 默認為 None，若需要特定角色則傳�
 
 
 
-
+#顧客的檢查
 def validate_user(email, password, role):
     # 檢查角色是否有效，避免 SQL 注入攻擊
     valid_roles = ['customer', 'restaurant', 'bro']
     if role not in valid_roles:
         return None  # 如果角色無效，返回 None
-
     # 根據角色選擇資料表
     table = role  # 角色名與資料表名相同
-
     # 明確指定查詢欄位，不查詢不存在的 role 欄位
     sql = f"SELECT cID, email, password FROM {table} WHERE email = %s AND password = PASSWORD(%s)"
-    
     cursor.execute(sql, (email, password))
     user = cursor.fetchone()
-
     if user:
         return {
             'email': user['email'],
@@ -62,10 +58,12 @@ def validate_user(email, password, role):
     return None
 
 
+#顧客的資料
 def get_customer_data(email):
     cursor.execute("SELECT * FROM customer WHERE email = %s", (email,))
     return cursor.fetchone()
 
+#顧客的更新資料
 def update_customer_data(email, name, phone, address, card):
     try:
         # 使用 MySQL 進行資料庫操作
@@ -82,6 +80,7 @@ def update_customer_data(email, name, phone, address, card):
         conn.rollback()  # 發生錯誤時回滾變更
         return False
 
+#顧客的拿餐廳資料
 def get_restaurants():
     try:
         query = "SELECT rID, name FROM restaurant"
@@ -92,12 +91,7 @@ def get_restaurants():
         return []
 
 
-
-
-
-
-
-# 根據餐廳 ID 獲取餐廳資料的函數
+# 顧客根據餐廳 ID 獲取餐廳資料的函數
 def get_restaurant_by_id(shop_id):
     try:
         query = "SELECT * FROM restaurant WHERE rID = %s"  # 查詢特定餐廳資料
@@ -107,7 +101,8 @@ def get_restaurant_by_id(shop_id):
         print(f"資料庫錯誤: {err}")
         return None
 
-# 獲取所有可用食物資料的函數
+
+# 顧客獲取所有可用食物資料的函數
 def get_foods():
     try:
         query = """
@@ -122,7 +117,7 @@ def get_foods():
         print(f"資料庫錯誤: {err}")
         return []
 
-# 根據食物 ID 獲取特定食物資料的函數
+# 顧客根據食物 ID 獲取特定食物資料的函數
 def get_food_by_id(food_id):
     try:
         query = "SELECT * FROM food WHERE fID = %s"  # 查詢特定食物資料
@@ -132,7 +127,7 @@ def get_food_by_id(food_id):
         print(f"資料庫錯誤: {err}")
         return None
 
-# 根據餐廳 ID 列表獲取食物資料的函數
+# 顧客根據餐廳 ID 列表獲取食物資料的函數
 def get_foods_by_shop_ids(shop_ids):
     if not shop_ids:
         query = """
@@ -160,10 +155,7 @@ def get_foods_by_shop_ids(shop_ids):
 
 
 
-
-
-
-# 插入訂單
+# 顧客插入訂單
 def insert_order(cID, total_price, note, delivery_address, rID):
     try:
         query = """
@@ -178,7 +170,8 @@ def insert_order(cID, total_price, note, delivery_address, rID):
         print(f"資料庫錯誤: {err}")
         return None
 
-# 插入訂單項目
+
+# 顧客插入訂單項目
 def insert_order_item(oID, item_id, quantity, price):
     try:
         query = """
@@ -186,7 +179,6 @@ def insert_order_item(oID, item_id, quantity, price):
         VALUES (%s, %s, %s, %s)
         """
         print(f"Attempting to insert: oID={oID}, item_id={item_id}, quantity={quantity}, price={price}")
-
         cursor.execute(query, (oID, item_id, quantity, price))
         conn.commit()  # 確保提交事務
     except mysql.connector.Error as err:
@@ -195,10 +187,7 @@ def insert_order_item(oID, item_id, quantity, price):
 
 
 
-
-
-
-# 根據食物ID獲取餐廳ID
+# 顧客根據食物ID獲取餐廳ID
 def get_rid_by_item(item_id):
     try:
         query = """
@@ -208,11 +197,9 @@ def get_rid_by_item(item_id):
         """
         cursor.execute(query, (item_id,))
         result = cursor.fetchone()
-        
         if result is None:
             print(f"未找到對應的 rID，請確認 fID: {item_id} 是否存在")
             return None
-        
         if 'rID' in result:
             return result['rID']
         else:
@@ -223,6 +210,7 @@ def get_rid_by_item(item_id):
         return None
 
 
+#顧客取訂單資料
 def get_order():
     cursor = conn.cursor()
     query = "SELECT * FROM `order` LIMIT 1"  # 假設你的資料表叫 'orders'
@@ -230,27 +218,22 @@ def get_order():
     result = cursor.fetchone()  # 取得第一筆資料
     return result
 
-# 直接使用全局的 conn 物件
+# #顧客取細節
 def get_order_details(order_id):
     cursor = conn.cursor(dictionary=True)
-    
     # 查詢訂單基本資訊
     cursor.execute("SELECT * FROM `order` WHERE oID = %s", (order_id,))
     order = cursor.fetchone()
-
     if order:
         # 查詢該訂單的商品資訊
         cursor.execute("SELECT * FROM detail WHERE oID = %s", (order_id,))
         items = cursor.fetchall()
-        
         # 把商品資料添加到訂單資料中
         order['items'] = items
-    
     cursor.close()
-    
     return order
 
-# 用來處理訂單時，進行適當的處理邏輯
+# 顧客用來處理訂單時，進行適當的處理邏輯
 def create_order(data):
     try:
         # 驗證數據
@@ -259,45 +242,35 @@ def create_order(data):
         address = data.get('address')
         items = data.get('items', [])
         cID = data.get('cID')  # 客戶 ID
-        
         if not address:
             return {'status': 'error', 'message': '請填寫送餐地址'}
-
         if not isinstance(items, list) or not items:
             return {'status': 'error', 'message': '訂單項目無效'}
-
         # 確認所有商品來自同一家餐廳
         first_rID = get_rid_by_item(items[0].get('item_id'))
         for item in items:
             rID = get_rid_by_item(item.get('item_id'))
             if rID != first_rID:
                 return {'status': 'error', 'message': '訂單只能包含同一家店的商品'}
-
         # 插入訂單，取得新訂單的 ID
         order_id = insert_order(cID, total_price, note, address, first_rID)
         if not order_id:
             return {'status': 'error', 'message': '訂單創建失敗'}
-
         # 插入訂單項目
         for item in items:
             item_id = item.get('item_id')
             quantity = item.get('quantity', 0)
             price = item.get('price', 0.0)
-
             if not item_id or quantity <= 0 or price <= 0.0:
                 return {'status': 'error', 'message': '訂單項目數據無效'}
-
             insert_order_item(order_id, item_id, quantity, price, first_rID)
-
         return {'status': 'success', 'order_id': order_id}
     except Exception as e:
         print(f"錯誤: {e}")
         return {'status': 'error', 'message': '系統錯誤'}
     
     
-    
-    
-
+#顧客的訂單狀態
 def get_order_status(oID):
     """
     根據 oID 查詢訂單狀態
@@ -317,6 +290,7 @@ def get_order_status(oID):
         print(f"查詢錯誤: {e}")
         return None  # 返回 None 作為查詢失敗的指示
 
+#顧客的訂單真存在1
 def validate_order(oID):
     """
     驗證訂單是否存在
@@ -327,32 +301,29 @@ def validate_order(oID):
         cursor.execute(query, (oID,))
         result = cursor.fetchone()
         cursor.close()
-        
         # 輸出調試信息
         print(f"查詢結果: {result}")
-        
         # 驗證是否存在並返回布林值
         return result and result['count'] > 0
     except mysql.connector.Error as e:
         print(f"驗證錯誤: {e}")
         return False
     
+#顧客的訂單真存在2
 def validateOrder(oID):
     try:
         query = "SELECT COUNT(*) FROM `order` WHERE oID = %s"
         cursor.execute(query, (oID,))
         result = cursor.fetchone()
-
         # 輸出調試信息
         print(f"查詢結果: {result}")
-
         # 驗證是否存在並返回布林值
         return result[0] > 0
     except mysql.connector.Error as e:
         print(f"驗證錯誤: {e}")
         return False
 
-# 插入評論
+# 顧客插入評論
 def insert_review(oID, rateR, rateB, commentR, commentB):
     sql = """
     INSERT INTO star (oID, rateR, rateB, commentR, commentB)
@@ -363,7 +334,6 @@ def insert_review(oID, rateR, rateB, commentR, commentB):
         commentR = VALUES(commentR),
         commentB = VALUES(commentB);
     """
-
     try:
         # 執行插入操作
         cursor.execute(sql, (oID, rateR, rateB, commentR, commentB))
@@ -375,16 +345,14 @@ def insert_review(oID, rateR, rateB, commentR, commentB):
         print(f"提交失敗，錯誤: {err}")
         return False
 
-
+#顧客的歷史訂單
 def get_orders_by_customer(query, params):
     try:
         cursor = conn.cursor(dictionary=True)
         print(f"Executing query: {query} with params: {params}")  # 確認查詢語句和參數
         cursor.execute(query, params)
-        
         orders = cursor.fetchall()
         print(f"Fetched orders from DB: {orders}")  # 查看從資料庫中返回的資料
-        
         return orders
     except Exception as e:
         print(f"Error executing query: {e}")
@@ -393,33 +361,7 @@ def get_orders_by_customer(query, params):
         cursor.close()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#顧客的狀態催生
 def check_order_status(oID):
     try:
         # 查詢指定訂單的狀態
@@ -428,7 +370,6 @@ def check_order_status(oID):
         cursor.execute(query, (oID,))
         result = cursor.fetchone()
         cursor.close()
-
         if result:
             return result['status']
         else:
@@ -436,9 +377,8 @@ def check_order_status(oID):
     except mysql.connector.Error as e:
         print(f"查詢錯誤: {e}")
         return None
-
 # 用測試的訂單編號來查詢
-oID = 55
+oID = 56
 status = check_order_status(oID)
 
 if status:
