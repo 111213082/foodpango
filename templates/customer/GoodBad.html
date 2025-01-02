@@ -50,7 +50,71 @@
         .section {
             margin-bottom: 30px;
         }
+        .order-id-info {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .actions button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .actions button:hover {
+            background-color: #0056b3;
+        }
     </style>
+</head>
+<body>
+    <h1>商品與服務評價</h1>
+    <p>請選擇您對店家和送貨小哥的評分，並留下您的評論。</p>
+
+    <!-- 顯示前一頁訂單編號 -->
+    <div class="order-id-info">
+        <p>訂單編號: <strong>{{ oID }}</strong></p>
+    </div>
+
+    <!-- 評價表單 -->
+    <form action="/submit_review" method="POST" id="ratingForm" onsubmit="submitForm(event)">
+        <div class="section">
+            <h2>店家評價</h2>
+            <div class="rating">
+                <span data-value="1" onclick="selectRating(this, 'rateR')">1</span>
+                <span data-value="2" onclick="selectRating(this, 'rateR')">2</span>
+                <span data-value="3" onclick="selectRating(this, 'rateR')">3</span>
+                <span data-value="4" onclick="selectRating(this, 'rateR')">4</span>
+                <span data-value="5" onclick="selectRating(this, 'rateR')">5</span>
+            </div>
+            <input type="hidden" name="rateR" id="rateR">
+            <textarea name="commentR" placeholder="請輸入您對店家的評論..."></textarea><br>
+        </div>
+    
+        <div class="section">
+            <h2>送貨小哥評價</h2>
+            <div class="rating">
+                <span data-value="1" onclick="selectRating(this, 'rateB')">1</span>
+                <span data-value="2" onclick="selectRating(this, 'rateB')">2</span>
+                <span data-value="3" onclick="selectRating(this, 'rateB')">3</span>
+                <span data-value="4" onclick="selectRating(this, 'rateB')">4</span>
+                <span data-value="5" onclick="selectRating(this, 'rateB')">5</span>
+            </div>
+            <input type="hidden" name="rateB" id="rateB">
+            <textarea name="commentB" placeholder="請輸入您對送貨小哥的評論..."></textarea><br>
+        </div>
+    
+        <!-- 隱藏欄位：訂單ID -->
+        <input type="hidden" name="oID" value="{{ oID }}"> <!-- 實際應根據動態數據生成 oID -->
+    
+        <!-- 提交按鈕 -->
+        <button type="submit">提交評價</button>
+    </form>
+
+
     <script>
         function selectRating(element, inputId) {
             const allRatings = element.parentElement.querySelectorAll('span');
@@ -83,45 +147,5 @@
             });
         }
     </script>
-</head>
-<body>
-    <h1>商品與服務評價</h1>
-    <p>請選擇您對店家和送貨小哥的評分，並留下您的評論。</p>
-
-    <!-- 評價表單 -->
-    <form action="/submit_review" method="POST" id="ratingForm" onsubmit="submitForm(event)">
-        <div class="section">
-            <h2>店家評價</h2>
-            <div class="rating">
-                <span data-value="1" onclick="selectRating(this, 'rateR')">1</span>
-                <span data-value="2" onclick="selectRating(this, 'rateR')">2</span>
-                <span data-value="3" onclick="selectRating(this, 'rateR')">3</span>
-                <span data-value="4" onclick="selectRating(this, 'rateR')">4</span>
-                <span data-value="5" onclick="selectRating(this, 'rateR')">5</span>
-            </div>
-            <input type="hidden" name="rateR" id="rateR">
-            <textarea name="store_comment" placeholder="請輸入您對店家的評論..."></textarea><br>
-        </div>
-    
-        <div class="section">
-            <h2>送貨小哥評價</h2>
-            <div class="rating">
-                <span data-value="1" onclick="selectRating(this, 'rateB')">1</span>
-                <span data-value="2" onclick="selectRating(this, 'rateB')">2</span>
-                <span data-value="3" onclick="selectRating(this, 'rateB')">3</span>
-                <span data-value="4" onclick="selectRating(this, 'rateB')">4</span>
-                <span data-value="5" onclick="selectRating(this, 'rateB')">5</span>
-            </div>
-            <input type="hidden" name="rateB" id="rateB">
-            <textarea name="delivery_comment" placeholder="請輸入您對送貨小哥的評論..."></textarea><br>
-        </div>
-    
-        <!-- 隱藏欄位：訂單ID -->
-        <input type="hidden" name="oID" value="12345"> <!-- 實際應根據動態數據生成 oID -->
-    
-        <!-- 提交按鈕 -->
-        <button type="submit">提交評價</button>
-    </form>
-    
 </body>
 </html>

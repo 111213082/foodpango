@@ -4,27 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>個人歷史購買總結</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #ff6f61;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin: 0;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .order-summary {
+            background-color: #fff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 900px;
+        }
+
+        .order-summary p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .order-details {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .order-details p {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+
+        .order-details .order-id {
+            font-weight: bold;
+            color: #2a9d8f;
+        }
+
+        .total-spent {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e76f51;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .divider {
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>個人歷史購買總結</h1>
-    <p>您總共花費了: <?php echo number_format($totalSpent, 2); ?> 元</p>
+    <div class="total-spent">
+        <p>您總共花費了: <span id="totalSpent">0.00</span> 元</p>
+    </div>
 
     <h2>訂單詳情</h2>
-    <?php
-    // 查詢訂單詳情
-    $query = "SELECT oID, totalPrice, createdAt, note, address FROM `order` WHERE cID = ?";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$cID]);
-    
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo "<div>";
-        echo "<p>訂單編號: " . $row['oID'] . "</p>";
-        echo "<p>訂單金額: " . number_format($row['totalPrice'], 2) . " 元</p>";
-        echo "<p>訂單日期: " . $row['createdAt'] . "</p>";
-        echo "<p>備註: " . $row['note'] . "</p>";
-        echo "<p>地址: " . $row['address'] . "</p>";
-        echo "</div><hr>";
-    }
-    ?>
+    <div id="orders"></div>
+
+    <script>
+        // 假設 cID 是從登錄系統或其他方式取得的
+        const cID = 1; // 這裡假設顧客的 ID 是 1，實際情況應該是從登錄狀態中獲得
+        const apiUrl = `http://localhost:5000/orders/${cID}`;  // Flask 伺服器的 URL
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    // 如果回應不成功，顯示 HTTP 錯誤碼
+                    console.error(`HTTP 錯誤: ${response.status}`);
+                    throw new Error('無法加載資料');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const ordersContainer = document.getElementById('orders');
+                let totalSpent = 0;
+
+                if (data.length === 0) {
+                    ordersContainer.innerHTML = "<p>目前沒有任何訂單資料。</p>";
+                    return;
+                }
+
+                // 顯示每筆訂單資料
+                data.forEach(order => {
+                    const orderDiv = document.createElement('div');
+                    orderDiv.classList.add('order-summary');
+                    orderDiv.innerHTML = `
+                        <div class="order-details">
+                            <p class="order-id">訂單編號: ${order.oID}</p>
+                            <p>餐廳 ID: ${order.rID}</p>
+                            <p>訂單金額: ${parseFloat(order.totalPrice).toFixed(2)} 元</p>
+                            <p>訂單日期: ${order.createdAt}</p>
+                            <p>備註: ${order.note || '無'}</p>
+                            <p>地址: ${order.address}</p>
+                        </div>
+                        <div class="divider"></div>
+                    `;
+                    ordersContainer.appendChild(orderDiv);
+                    totalSpent += parseFloat(order.totalPrice);
+                });
+
+                document.getElementById('totalSpent').textContent = totalSpent.toFixed(2);
+            })
+            .catch(error => {
+                console.error('錯誤:', error);
+                alert('無法加載訂單資料');
+            });
+    </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 import dbUtils
 from flask import Flask, render_template, request, session, redirect, jsonify, url_for
 from functools import wraps
-from dbUtils import get_restaurants, get_restaurant_by_id, get_foods, get_food_by_id, get_foods_by_shop_ids, insert_order_item
+from dbUtils import get_restaurants, get_restaurant_by_id, get_foods, get_food_by_id, get_foods_by_shop_ids, insert_order_item, get_orders_by_cid
 from dbUtils import get_customer_data, update_customer_data,create_order, get_order,get_order_details, insert_order, get_rid_by_item
-from dbUtils import login_required, validate_user, get_rid_by_item, save_review, get_order_status
+from dbUtils import login_required, validate_user, get_rid_by_item,  get_order_status, insert_review, validate_order, validateOrder
 
 # creates a Flask application, specify a static folder on /
 app = Flask(__name__, static_folder='static', static_url_path='/')
@@ -150,36 +150,35 @@ def food_detail(food_id):
         return "菜品資料未找到", 404
 
 
-@app.route("/GoodBad")
-def GoodBad():
-    return render_template("GoodBad.html")
+
+@app.route('/review/<order_id>')
+def review(order_id):
+    return render_template('GoodBad.html', oID=order_id)
 
 
+# 提交評價的路由
+# 提交評價的路由
 @app.route('/submit_review', methods=['POST'])
 def submit_review():
-    try:
-        # 從表單中獲取評價數據
-        store_rating = request.form.get('rateR')
-        delivery_rating = request.form.get('rateB')
-        store_comment = request.form.get('store_comment')
-        delivery_comment = request.form.get('delivery_comment')
-        oID = request.form.get('oID')
+    oID = request.form.get('oID')  # 獲取表單中的 oID
 
-        # 確保有有效的評分數據
-        if not store_rating or not delivery_rating:
-            return "評分未填寫完整", 400
+    # 檢查 oID 是否有效
+    if not oID or not validate_order(oID):  # 如果 oID 無效或訂單不存在
+        return {'status': 'error', 'message': '無效的訂單ID'}
 
-        # 呼叫 save_review 函數來儲存評論
-        success = save_review(oID, store_rating, delivery_rating, store_comment, delivery_comment)
-        
-        if success:
-            return '評論已提交！'
-        else:
-            return '提交失敗，請稍後再試。', 500
+    # 繼續處理評論
+    rateR = request.form.get('rateR')
+    rateB = request.form.get('rateB')
+    commentR = request.form.get('commentR')
+    commentB = request.form.get('commentB')
 
-    except Exception as e:
-        print(f"Error occurred: {str(e)}")
-        return f'提交失敗: {str(e)}', 500
+    # 插入評論
+    success = insert_review(oID, rateR, rateB, commentR, commentB)
+
+    if success:
+        return {'status': 'success', 'message': '評論已提交'}
+    else:
+        return {'status': 'error', 'message': '提交評論失敗'}
 
 
 
@@ -262,18 +261,42 @@ def create_order_route():
 
 
 
+@app.route('/orders/<int:cID>', methods=['GET'])
+def get_orders(cID):
+    # 使用 dbUtils.py 中的函數查詢顧客的訂單資料
+    orders = get_orders_by_cid(cID)
+
+    if not orders:
+        return jsonify({"message": "沒有找到訂單資料"}), 404
+
+    # 返回訂單資料
+    return jsonify(orders)
+
+
+
 @app.route('/get-order-status/<int:oID>', methods=['GET'])
-def get_order_status(oID):
-    # 查詢訂單狀態
-    status = dbUtils.get_order_status(oID)
-    print(f"Order status for {oID}: {status}")  # 添加日志
-    
-    if status is None:
+def get_order_status_api(oID):
+    """
+    API 端點: 根據 oID 返回訂單狀態
+    """
+    # 驗證訂單是否存在
+    if not validate_order(oID):
+        print(f"訂單 {oID} 不存在")
         return jsonify({'error': '訂單未找到'}), 404
-    else:
-        return jsonify({'status': status})
 
+    # 查詢訂單狀態
+    status = get_order_status(oID)
+    if status is None:
+        return jsonify({'error': '無法獲取訂單狀態，請稍後再試'}), 500
+    print(f"訂單 {oID} 狀態: {status}")  # 確認後端回應的狀態
+    return jsonify({'status': status})  # 返回訂單的狀態
 
-
-
+@app.route('/update-order-status/<int:order_id>', methods=['POST'])
+def update_status(order_id):
+    data = request.get_json()
+    status = data.get('status')
+    if status:
+        update_order_status(order_id, status)
+        return jsonify({'message': '訂單狀態更新成功'})
+    return jsonify({'message': '缺少狀態字段'}), 400
 

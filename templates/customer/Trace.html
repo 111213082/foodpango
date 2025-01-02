@@ -71,7 +71,6 @@
             background-color: #ccc;
             pointer-events: none;
         }
-        /* 新增刷新按鈕的樣式 */
         .refresh-btn {
             background-color: #007bff;
             color: white;
@@ -87,105 +86,138 @@
     </style>
 </head>
 <body>
-
-    <!-- 頁面頭部區域 -->
     <header>
         <h1>追蹤訂單</h1>
         <hr>
     </header>
 
-    <!-- 訂單詳細資訊區域 -->
     <div class="order-info">
         <p>訂單編號: <strong id="order-id">{{ order.oID }}</strong></p>
         <p>訂單金額: <strong>{{ order.totalPrice }} 元</strong></p>
         <p>備註: <strong>{{ order.note }}</strong></p>
-
-        <!-- 訂單狀態 -->
-        <p id="order-status" class="status pending">
-            訂單狀態: 待確認
-        </p>
+        <p id="order-status" class="status pending">訂單狀態: 待確認</p>
     </div>
 
-    <!-- 顯示小哥、店家、商品資訊 -->
     <div class="order-info">
         <p>小哥資訊: <strong>{{ order.bID }}</strong></p>
         <p>預計送達時間: <strong>{{ order.prepareTime }}+{{ order.deliverTime }} 分</strong></p>
     </div>
 
-    <!-- 操作按鈕區域 -->
     <div class="actions">
         <a id="confirm-btn" href="#" class="btn-track disabled-btn" disabled>收貨成功</a>
         <a href="javascript:void(0);" class="btn-track" onclick="showReminder()">尚未收貨</a>
-        <!-- 新增刷新按鈕 -->
         <a href="javascript:void(0);" class="refresh-btn" onclick="refreshOrderStatus()">刷新狀態</a>
     </div>
 
     <script>
-        // 彈出提醒訊息的函數
         function showReminder() {
-            const confirmation = confirm("小哥很可能就在路上快到了，確定不給個機會嗎？");
-
+            const confirmation = confirm("食物很可能就在路上快到了，確定不給個機會嗎？");
             if (confirmation) {
                 alert("您選擇了尚未收貨，會進行後續處理。");
-                window.location.href = "/GoodBad";
+                const orderId = document.getElementById('order-id').textContent.trim();
+                window.location.href = `/review/${orderId}`;
             } else {
                 alert("您選擇了繼續等待，感謝您的耐心。");
             }
         }
 
-        // 每隔一段時間自動檢查訂單狀態並更新頁面
         function refreshOrderStatus() {
-            const orderID = document.getElementById('order-id').textContent.trim();
+    const orderID = document.getElementById('order-id').textContent.trim();
+    console.log(`Fetching status for orderID: ${orderID}`);  // 確認 orderID 是否正確
 
-            console.log(`Fetching status for orderID: ${orderID}`); // 調試輸出
+    fetch(`/get-order-status/${orderID}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`伺服器返回錯誤狀態碼: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Received data:', data);  // 檢查返回的 data
+        const statusElement = document.getElementById('order-status');
+        const deliveryButton = document.getElementById('confirm-btn');
 
-            fetch(`/get-order-status/${orderID}`)  // 呼叫伺服器 API
-                .then(response => {
-                    console.log('Response status:', response.status); // 檢查回應狀態碼
-                    if (!response.ok) {
-                        throw new Error(`伺服器返回錯誤狀態碼: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Received data:', data);  // 確認收到的資料
-                    const statusElement = document.getElementById('order-status');
-                    const deliveryButton = document.getElementById('confirm-btn');
-
-                    // 根據後端回傳的狀態更新頁面
-                    if (data.status === '完成') {
-                        statusElement.textContent = `訂單狀態: 完成`;
-                        statusElement.className = "status";  // 清除其他樣式
-                        deliveryButton.classList.remove('disabled-btn');
-                        deliveryButton.style.backgroundColor = "#28a745";  // 設定為綠色
-                        deliveryButton.href = "/GoodBad";
-                        deliveryButton.removeAttribute('disabled');
-                    } else if (data.status === '待確認') {
-                        statusElement.textContent = `訂單狀態: 待確認`;
-                        statusElement.className = "status pending";
-                        deliveryButton.classList.add('disabled-btn');
-                        deliveryButton.style.backgroundColor = "#ccc";  // 設定為灰色
-                        deliveryButton.href = "#";
-                        deliveryButton.setAttribute('disabled', 'true');
-                    } else {
-                        // 根據不同狀態處理
-                        statusElement.textContent = `訂單狀態: ${data.status}`;
-                    }
-                })
-                .catch(error => {
-                    console.error('錯誤:', error);
-                    alert(`錯誤訊息: ${error.message}，請確認 API 是否正確運作`);
-                });
+        // 根據返回的 status 更新頁面
+        switch (data.status) {
+            case '已送達':
+                statusElement.textContent = `訂單狀態: 已送達`;
+                statusElement.className = "status";  
+                const orderId = document.getElementById('order-id').textContent.trim();
+                deliveryButton.classList.remove('disabled-btn');
+                deliveryButton.style.backgroundColor = "#28a745";  
+                deliveryButton.href = `/review/${orderId}`;
+                deliveryButton.removeAttribute('disabled');
+                break;
+            case '待確認':
+                statusElement.textContent = `訂單狀態: 待確認`;
+                statusElement.className = "status pending";
+                deliveryButton.classList.add('disabled-btn');
+                deliveryButton.style.backgroundColor = "#ccc";  
+                deliveryButton.href = "#";
+                deliveryButton.setAttribute('disabled', 'true');
+                break;
+            case '店家已接單':
+                statusElement.textContent = `訂單狀態: 店家已接單`;
+                statusElement.className = "status";
+                break;
+            case '小哥已接單':
+                statusElement.textContent = `訂單狀態: 小哥已接單`;
+                statusElement.className = "status";
+                break;
+            case '配送中':
+                statusElement.textContent = `訂單狀態: 配送中`;
+                statusElement.className = "status";
+                break;
+            default:
+                statusElement.textContent = `訂單狀態: ${data.status}`;
+                statusElement.className = "status";
+                break;
         }
 
-        // 頁面加載後立即更新狀態
-        document.addEventListener('DOMContentLoaded', function () {
-            refreshOrderStatus();  // 頁面加載後立即執行
-        });
 
-        // 每 10 秒自動刷新訂單狀態
-        setInterval(refreshOrderStatus, 10000);
+        
+    })
+    .catch(error => {
+        console.error('錯誤:', error);
+        alert(`錯誤訊息: ${error.message}，請確認 API 是否正確運作`);
+    });
+    }
+    function confirmDelivery() {
+            const orderID = document.getElementById('order-id').textContent.trim();
+            console.log(`Confirming delivery for orderID: ${orderID}`);  // 確認 orderID 是否正確
+
+            fetch(`/update-order-status/${orderID}`, {
+                method: 'POST',  // 使用 POST 請求來更新訂單狀態
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: '訂單完成' })  // 傳送訂單完成的狀態
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`伺服器返回錯誤狀態碼: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("訂單已完成！謝謝您的購物。");
+                const statusElement = document.getElementById('order-status');
+                statusElement.textContent = `訂單狀態: 訂單完成`;
+                statusElement.className = "status";
+                const deliveryButton = document.getElementById('confirm-btn');
+                deliveryButton.classList.add('disabled-btn');
+                deliveryButton.style.backgroundColor = "#ccc";
+                deliveryButton.removeAttribute('href');
+                deliveryButton.setAttribute('disabled', 'true');
+            })
+            .catch(error => {
+                console.error('錯誤:', error);
+                alert(`錯誤訊息: ${error.message}，請確認 API 是否正確運作`);
+            });
+        }
+
+
+
     </script>
-
 </body>
 </html>
