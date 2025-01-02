@@ -102,12 +102,17 @@ def home():
         if user_role == 'customer':
             return redirect('/customer/dashboard')
         elif user_role == 'restaurant':
-            return redirect('/restaurant/dashboard')
+            rID = session.get('rID')  # 獲取商家 ID
+            if rID:  # 如果 rID 存在，重定向到 /rHome/<int:rID>
+                return redirect(f'/rHome/{rID}')
+            else:  # rID 不存在，可能是數據不完整或會話問題
+                return redirect('/loginPage.html')
         elif user_role == 'bro':
             return redirect('/bro/dashboard')
     else:
         # 未登入，展示公共首頁
         return render_template('index.html')
+
 
 # 路由：顧客專屬頁面
 @app.route('/customer/dashboard')
@@ -124,7 +129,7 @@ def bro_dashboard():
     return render_template('bro_dashboard.html')
 
 #商家主畫面
-@app.route('/restaurant/dashboard')
+#@app.route('/restaurant/dashboard')
 @app.route("/rHome/<int:rID>")
 @login_required(role='restaurant')
 def rHome(rID=None):
