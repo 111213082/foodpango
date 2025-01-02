@@ -21,20 +21,41 @@
             text-align: center;
             margin: 20px 0;
         }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .logout-btn {
+            display: block;
+            text-align: center;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
-        <h1>歡迎光臨FoodpanGO!</h1>
-        <hr style="border: 5px solid black; width: 50%;">
-        <hr style="border: 1px solid black; width: 50%;">
+    <h1>歡迎光臨FoodpanGO!</h1>
+    <hr style="border: 5px solid black; width: 50%;">
+    <hr style="border: 1px solid black; width: 50%;">
+
     <center>
         <br><br><br>
         <a href="/information" class="button">個人資料管理</a><br><br><br><br>
         <a href="/ShopList" class="button">進行菜品購買</a><br><br><br><br>
-        <a href="/all" class="button">個人歷史購買總結</a>
+        <a href="/order_summary/{{ session['cID'] }}" class="button">個人歷史購買總結</a>
 
     </center>
 
-
+    <div class="logout-btn">
+        <a href="/logout" class="button">登出</a>
+    </div>
 </body>
 </html>

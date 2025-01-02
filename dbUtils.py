@@ -230,41 +230,25 @@ def get_order():
     result = cursor.fetchone()  # 取得第一筆資料
     return result
 
-
+# 直接使用全局的 conn 物件
 def get_order_details(order_id):
-    try:
-        # 確保資料庫連接有效
-        if not conn.is_connected():
-            conn.reconnect()  # 重新建立連接
+    cursor = conn.cursor(dictionary=True)
+    
+    # 查詢訂單基本資訊
+    cursor.execute("SELECT * FROM `order` WHERE oID = %s", (order_id,))
+    order = cursor.fetchone()
 
-        # 查詢訂單基本資訊
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM `order` WHERE oID = %s", (order_id,))
-        order = cursor.fetchone()
-
-        if order:
-            # 查詢訂單的商品資訊
-            cursor.execute("SELECT * FROM detail WHERE oID = %s", (order_id,))
-            items = cursor.fetchall()
-
-            # 計算總金額
-            total_price = 0
-            for item in items:
-                total_price += item['quantity'] * item['price']
-
-            # 加入到訂單資訊中
-            order['items'] = items
-            order['total_price'] = total_price  # 計算後的總金額
-
-        cursor.close()  # 關閉游標
-        return order
-
-    except mysql.connector.Error as e:
-        print(f"查詢錯誤: {e}")
-        return None
-
-
-
+    if order:
+        # 查詢該訂單的商品資訊
+        cursor.execute("SELECT * FROM detail WHERE oID = %s", (order_id,))
+        items = cursor.fetchall()
+        
+        # 把商品資料添加到訂單資料中
+        order['items'] = items
+    
+    cursor.close()
+    
+    return order
 
 # 用來處理訂單時，進行適當的處理邏輯
 def create_order(data):
@@ -309,6 +293,9 @@ def create_order(data):
     except Exception as e:
         print(f"錯誤: {e}")
         return {'status': 'error', 'message': '系統錯誤'}
+    
+    
+    
     
 
 def get_order_status(oID):
@@ -389,48 +376,86 @@ def insert_review(oID, rateR, rateB, commentR, commentB):
         return False
 
 
-def get_orders_by_cid(cID):
+def get_orders_by_customer(query, params):
+    cursor = None
     try:
-        # 查詢顧客的訂單資料
-        query = "SELECT oID, rID, totalPrice, createdAt, note, address FROM `order` WHERE cID = %s"
-        cursor.execute(query, (cID,))
+        connection = db_connection()
+        cursor = connection.cursor()
+        print(f"Executing query: {query} with params: {params}")  # 打印執行的 SQL 查詢
+        cursor.execute(query, params)
+        
         orders = cursor.fetchall()
+        print(f"Orders fetched: {orders}")  # 打印查詢結果
+        
+        columns = [desc[0] for desc in cursor.description]
+        orders = [dict(zip(columns, order)) for order in orders]
+        
         return orders
-    except mysql.connector.Error as e:
-        print(f"查詢錯誤: {e}")
-        return []
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return None
     finally:
-        # 確保在函數結束時關閉 cursor
-        cursor.close()
+        if cursor:
+            cursor.close()
 
 
-# 狀態催生
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def check_order_status(oID):
     try:
-        # 確認資料庫連接有效
-        if not conn.is_connected():
-            print("資料庫連接已斷開，重新建立連接...")
-            # 如果連接已斷開，重新建立連接
-            conn.reconnect()  # 重新建立連接，避免重複建立新的連接
-        
         # 查詢指定訂單的狀態
         query = "SELECT status FROM `order` WHERE oID = %s"
+        cursor = conn.cursor(dictionary=True)
         cursor.execute(query, (oID,))
         result = cursor.fetchone()
+        cursor.close()
 
         if result:
             return result['status']
         else:
-            return None  # 訂單不存在
+            return None
     except mysql.connector.Error as e:
         print(f"查詢錯誤: {e}")
-        return None  # 返回 None 作為查詢失敗的指示
+        return None
 
 # 用測試的訂單編號來查詢
-oID = 53
+oID = 54
 status = check_order_status(oID)
 
 if status:
     print(f"訂單 {oID} 的狀態是: {status}")
 else:
     print(f"訂單 {oID} 未找到")
+
+
+
+
+
+
+
+
+
+
+
+

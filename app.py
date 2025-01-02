@@ -1,9 +1,10 @@
 import dbUtils
 from flask import Flask, render_template, request, session, redirect, jsonify, url_for
 from functools import wraps
-from dbUtils import get_restaurants, get_restaurant_by_id, get_foods, get_food_by_id, get_foods_by_shop_ids, insert_order_item, get_orders_by_cid
+from dbUtils import get_restaurants, get_restaurant_by_id, get_foods, get_food_by_id, get_foods_by_shop_ids, insert_order_item
 from dbUtils import get_customer_data, update_customer_data,create_order, get_order,get_order_details, insert_order, get_rid_by_item
-from dbUtils import login_required, validate_user, get_rid_by_item,  get_order_status, insert_review, validate_order, validateOrder
+from dbUtils import login_required, validate_user, get_rid_by_item,  get_order_status, insert_review, validate_order, validateOrder, get_orders_by_customer
+
 
 # creates a Flask application, specify a static folder on /
 app = Flask(__name__, static_folder='static', static_url_path='/')
@@ -40,7 +41,7 @@ def main_page():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect('/loginpage.html')
+    return render_template('loginpage.html')
 
 
 @app.route('/')
@@ -157,7 +158,6 @@ def review(order_id):
 
 
 # 提交評價的路由
-# 提交評價的路由
 @app.route('/submit_review', methods=['POST'])
 def submit_review():
     oID = request.form.get('oID')  # 獲取表單中的 oID
@@ -260,20 +260,6 @@ def create_order_route():
     return jsonify({"success": True, "orderId": order_id}), 200
 
 
-
-@app.route('/orders/<int:cID>', methods=['GET'])
-def get_orders(cID):
-    # 使用 dbUtils.py 中的函數查詢顧客的訂單資料
-    orders = get_orders_by_cid(cID)
-
-    if not orders:
-        return jsonify({"message": "沒有找到訂單資料"}), 404
-
-    # 返回訂單資料
-    return jsonify(orders)
-
-
-
 @app.route('/get-order-status/<int:oID>', methods=['GET'])
 def get_order_status_api(oID):
     """
@@ -291,12 +277,20 @@ def get_order_status_api(oID):
     print(f"訂單 {oID} 狀態: {status}")  # 確認後端回應的狀態
     return jsonify({'status': status})  # 返回訂單的狀態
 
-@app.route('/update-order-status/<int:order_id>', methods=['POST'])
-def update_status(order_id):
-    data = request.get_json()
-    status = data.get('status')
-    if status:
-        update_order_status(order_id, status)
-        return jsonify({'message': '訂單狀態更新成功'})
-    return jsonify({'message': '缺少狀態字段'}), 400
+
+@app.route('/order_summary/<int:cID>') 
+def order_summary(cID):
+    # 查詢顧客的訂單資料
+    query = "SELECT oID, cID, rID, totalPrice, note, address, createdAt FROM `order` WHERE cID = %s"
+    orders = get_orders_by_customer(query, (cID,))
+    
+    # 如果沒有訂單資料，返回 404
+    if not orders:
+        return jsonify({"message": "目前沒有任何訂單資料。"}), 404
+    
+    # 計算總金額
+    total_amount = sum(float(order['totalPrice']) for order in orders)
+    
+    # 返回 JSON 格式資料
+    return jsonify(orders=orders, total_amount=total_amount)
 

@@ -173,50 +173,13 @@
                 statusElement.className = "status";
                 break;
         }
-
-
-        
     })
     .catch(error => {
         console.error('錯誤:', error);
         alert(`錯誤訊息: ${error.message}，請確認 API 是否正確運作`);
     });
-    }
-    function confirmDelivery() {
-            const orderID = document.getElementById('order-id').textContent.trim();
-            console.log(`Confirming delivery for orderID: ${orderID}`);  // 確認 orderID 是否正確
 
-            fetch(`/update-order-status/${orderID}`, {
-                method: 'POST',  // 使用 POST 請求來更新訂單狀態
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ status: '訂單完成' })  // 傳送訂單完成的狀態
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`伺服器返回錯誤狀態碼: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert("訂單已完成！謝謝您的購物。");
-                const statusElement = document.getElementById('order-status');
-                statusElement.textContent = `訂單狀態: 訂單完成`;
-                statusElement.className = "status";
-                const deliveryButton = document.getElementById('confirm-btn');
-                deliveryButton.classList.add('disabled-btn');
-                deliveryButton.style.backgroundColor = "#ccc";
-                deliveryButton.removeAttribute('href');
-                deliveryButton.setAttribute('disabled', 'true');
-            })
-            .catch(error => {
-                console.error('錯誤:', error);
-                alert(`錯誤訊息: ${error.message}，請確認 API 是否正確運作`);
-            });
-        }
-
-
+}
 
     </script>
 </body>
